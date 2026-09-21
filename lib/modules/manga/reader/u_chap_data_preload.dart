@@ -1,0 +1,75 @@
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui';
+
+import 'package:flower_power/models/chapter.dart';
+import 'package:flower_power/models/page.dart';
+import 'package:flower_power/services/get_chapter_pages.dart';
+
+class UChapDataPreload {
+  Chapter? chapter;
+  Directory? directory;
+  PageUrl? pageUrl;
+  bool? isLocale;
+  Uint8List? archiveImage;
+  int? index;
+  GetChapterPagesModel? chapterUrlModel;
+  int? pageIndex;
+  bool isTransitionPage;
+  Chapter? nextChapter;
+  String? mangaName;
+  bool? isLastChapter;
+  Rect? srcRect;
+
+  /// The real on-disk path of this page, for local image-folder chapters
+  /// whose pages already exist as standalone files. When set, this page
+  /// never needs to be read into memory and copied back out to a temp file -
+  /// [getLocalFilePath] returns it directly. Null for everything else
+  /// (archive-file entries, downloaded/remote pages), which have no single
+  /// real file they can point to up front.
+  String? localImagePath;
+
+  /// Cached rendered dimensions (set after image first loads)
+  double? loadedHeight;
+  double? loadedWidth;
+
+  /// Cached decoded image for MinSubsamplingImage to avoid re-decoding on scroll
+  Image? decodedImage;
+
+  /// Cached resolved local file path for SubsamplingScaleImageView to avoid resolving on scroll
+  String? resolvedFilePath;
+
+  UChapDataPreload(
+    this.chapter,
+    this.directory,
+    this.pageUrl,
+    this.isLocale,
+    this.archiveImage,
+    this.index,
+    this.chapterUrlModel,
+    this.pageIndex, {
+    this.isTransitionPage = false,
+    this.nextChapter,
+    this.mangaName,
+    this.isLastChapter = false,
+    this.srcRect,
+    this.localImagePath,
+  });
+
+  UChapDataPreload.transition({
+    required Chapter currentChapter,
+    required this.nextChapter,
+    required String this.mangaName,
+    required int this.pageIndex,
+    this.isLastChapter = false,
+  }) : chapter = currentChapter,
+       isTransitionPage = true,
+       directory = null,
+       pageUrl = null,
+       isLocale = null,
+       archiveImage = null,
+       index = null,
+       chapterUrlModel = null,
+       srcRect = null,
+       localImagePath = null;
+}

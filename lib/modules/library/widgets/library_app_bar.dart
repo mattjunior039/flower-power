@@ -1,0 +1,342 @@
+import 'package:flower_power/utils/platform_utils.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flower_power/models/manga.dart';
+import 'package:flower_power/models/settings.dart';
+import 'package:flower_power/modules/library/library_screen.dart';
+import 'package:flower_power/modules/library/providers/isar_providers.dart';
+import 'package:flower_power/modules/library/providers/library_state_provider.dart';
+import 'package:flower_power/modules/library/widgets/library_dialogs.dart';
+import 'package:flower_power/modules/library/widgets/library_settings_sheet.dart';
+import 'package:flower_power/modules/library/widgets/search_text_form_field.dart';
+import 'package:flower_power/modules/manga/detail/providers/state_providers.dart';
+import 'package:flower_power/modules/widgets/error_text.dart';
+import 'package:flower_power/modules/widgets/progress_center.dart';
+import 'package:flower_power/providers/l10n_providers.dart';
+import 'package:flower_power/services/library_updater.dart';
+import 'package:flower_power/utils/extensions/build_context_extensions.dart';
+import 'package:flower_power/utils/global_style.dart';
+import 'package:flower_power/utils/item_type_localization.dart';
+import 'package:flower_power/modules/widgets/manga_image_card_widget.dart';
+import 'package:flower_power/modules/widgets/tv_menu.dart';
+
+/// AppBar for the library screen.
+///
+/// Handles search mode, long-press selection mode, and the popup menu.
+class LibraryAppBar extends ConsumerWidget implements PreferredSizeWidget {
+  final ItemType itemType;
+  final bool isNotFiltering;
+  final bool showNumbersOfItems;
+  final int numberOfItems;
+  final List<Manga> entries;
+  final bool isCategory;
+  final int? categoryId;
+  final Settings settings;
+  final bool isSearch;
+  final bool ignoreFiltersOnSearch;
+  final TextEditingController textEditingController;
+  final VoidCallback onSearchToggle;
+  final VoidCallback onSearchClear;
+  final ValueChanged<bool> onIgnoreFiltersChanged;
+  final TickerProvider vsync;
+
+  const LibraryAppBar({
+    super.key,
+    required this.itemType,
+    required this.isNotFiltering,
+    required this.showNumbersOfItems,
+    required this.numberOfItems,
+    required this.entries,
+    required this.isCategory,
+    required this.categoryId,
+    required this.settings,
+    required this.isSearch,
+    required this.ignoreFiltersOnSearch,
+    required this.textEditingController,
+    required this.onSearchToggle,
+    required this.onSearchClear,
+    required this.onIgnoreFiltersChanged,
+    required this.vsync,
+  });
+
+  @override
+  Size get preferredSize => Size.fromHeight(AppBar().preferredSize.height);
+
+  /// The library menu actions, shared by the popup off-TV and the centred TV
+  /// menu.
+  void _onLibraryMenu(
+    BuildContext context,
+    WidgetRef ref,
+    int value,
+    AsyncValue<List<Manga>> manga,
+  ) {
+    if (value == 0) {
+      manga.whenData((value) {
+        updateLibrary(
+          ref: ref,
+          context: context,
+          mangaList: value,
+          itemType: itemType,
+        );
+      });
+    } else if (value == 1) {
+      manga.whenData((value) {
+        var randomManga = (value..shuffle()).first;
+        pushToMangaReaderDetail(
+          ref: ref,
+          archiveId: randomManga.isLocalArchive ?? false
+              ? randomManga.id
+              : null,
+          context: context,
+          lang: randomManga.lang ?? '',
+          mangaM: randomManga,
+          source: randomManga.source ?? '',
+          sourceId: randomManga.sourceId,
+        );
+      });
+    } else if (value == 2) {
+      showImportLocalDialog(context, itemType);
+    } else if (value == 3 && itemType == ItemType.anime) {
+      addTorrent(context);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLongPressed = ref.watch(isLongPressedStateProvider);
+    final mangaIdsList = ref.watch(mangasListStateProvider);
+    final allMangaStream = ref.watch(
+      getAllMangaStreamProvider(categoryId: null, itemType: itemType),
+    );
+    final manga = allMangaStream.whenData((allMangas) {
+      if (categoryId == null && !isCategory) {
+        return allMangas;
+      }
+      if (categoryId == null) {
+        return allMangas
+            .where((m) => m.categories == null || m.categories!.isEmpty)
+            .toList();
+      }
+      return allMangas
+          .where((m) => m.categories?.contains(categoryId) ?? false)
+          .toList();
+    });
+    final l10n = l10nLocalizations(context)!;
+
+    if (isLongPressed) {
+      return manga.when(
+        data: (data) => _SelectionAppBar(
+          itemType: itemType,
+          mangaIdsList: mangaIdsList,
+          data: data,
+        ),
+        error: (error, _) => ErrorText(error),
+        loading: () => const ProgressCenter(),
+      );
+    }
+
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      title: isSearch
+          ? null
+          : Row(
+              children: [
+                Text(
+                  itemType.localized(l10n),
+                  style: TextStyle(color: Theme.of(context).hintColor),
+                ),
+                const SizedBox(width: 10),
+                if (showNumbersOfItems)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Badge(
+                      backgroundColor: Theme.of(context).focusColor,
+                      label: Text(
+                        numberOfItems.toString(),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Theme.of(context).textTheme.bodySmall!.color,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+      actions: [
+        // Stop a running library update. Only shown while one is in progress.
+        if (ref.watch(libraryUpdateProvider).running)
+          IconButton(
+            splashRadius: 20,
+            tooltip: l10n.cancel,
+            focusColor: Theme.of(context).colorScheme.primary
+                .withValues(alpha: 0.4),
+            onPressed: () =>
+                ref.read(libraryUpdateProvider.notifier).requestCancel(),
+            icon: const Icon(Icons.stop_circle_outlined),
+          ),
+        isSearch
+            ? SeachFormTextField(
+                onChanged: (_) => onSearchClear(),
+                onPressed: onSearchToggle,
+                controller: textEditingController,
+                onSuffixPressed: () {
+                  textEditingController.clear();
+                  onSearchClear();
+                },
+              )
+            : IconButton(
+                splashRadius: 20,
+                onPressed: () {
+                  textEditingController.clear();
+                  onSearchToggle();
+                },
+                icon: const Icon(Icons.search),
+              ),
+        // Checkbox when searching library to ignore filters
+        if (isSearch)
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                isMobile
+                    ? l10n.ignore_filters.replaceFirst(' ', '\n')
+                    : l10n.ignore_filters.replaceAll('\n', ''),
+                textAlign: TextAlign.center,
+              ),
+              Checkbox(
+                value: ignoreFiltersOnSearch,
+                onChanged: (val) {
+                  onIgnoreFiltersChanged(val ?? false);
+                },
+              ),
+            ],
+          ),
+        IconButton(
+          splashRadius: 20,
+          onPressed: () {
+            showLibrarySettingsSheet(
+              context: context,
+              vsync: vsync,
+              settings: settings,
+              itemType: itemType,
+              entries: entries,
+            );
+          },
+          icon: Icon(
+            Icons.filter_list_sharp,
+            color: isNotFiltering ? null : Colors.yellow,
+          ),
+        ),
+        // Torrent stream is anime-only, so the menu's values are not its
+        // indices: keep label and value paired.
+        if (isTv)
+          Builder(
+            builder: (context) {
+              final entries = <(String, int)>[
+                (context.l10n.update_library, 0),
+                (l10n.open_random_entry, 1),
+                (l10n.import, 2),
+                if (itemType == ItemType.anime) (l10n.torrent_stream, 3),
+              ];
+              return IconButton(
+                icon: const Icon(Icons.more_vert),
+                onPressed: () async {
+                  final picked = await showTvMenu(
+                    context,
+                    title: l10n.library,
+                    options: [for (final e in entries) TvMenuOption(e.$1)],
+                  );
+                  if (picked != null && context.mounted) {
+                    _onLibraryMenu(context, ref, entries[picked].$2, manga);
+                  }
+                },
+              );
+            },
+          )
+        else
+          PopupMenuButton(
+            popUpAnimationStyle: popupAnimationStyle,
+            itemBuilder: (context) {
+              return [
+                PopupMenuItem<int>(
+                  value: 0,
+                  child: Text(context.l10n.update_library),
+                ),
+                PopupMenuItem<int>(
+                  value: 1,
+                  child: Text(l10n.open_random_entry),
+                ),
+                PopupMenuItem<int>(value: 2, child: Text(l10n.import)),
+                if (itemType == ItemType.anime)
+                  PopupMenuItem<int>(
+                    value: 3,
+                    child: Text(l10n.torrent_stream),
+                  ),
+              ];
+            },
+            onSelected: (value) => _onLibraryMenu(context, ref, value, manga),
+          ),
+      ],
+    );
+  }
+}
+
+/// AppBar shown when items are long-pressed for bulk selection.
+class _SelectionAppBar extends ConsumerWidget {
+  final ItemType itemType;
+  final Set<int> mangaIdsList;
+  final List<Manga> data;
+
+  const _SelectionAppBar({
+    required this.itemType,
+    required this.mangaIdsList,
+    required this.data,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLongPressed = ref.watch(isLongPressedStateProvider);
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: AppBar(
+        title: Text(mangaIdsList.length.toString()),
+        backgroundColor: context.primaryColor.withValues(alpha: 0.2),
+        leading: IconButton(
+          onPressed: () {
+            ref.read(mangasListStateProvider.notifier).clear();
+            ref
+                .read(isLongPressedStateProvider.notifier)
+                .update(!isLongPressed);
+          },
+          icon: const Icon(Icons.clear),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              for (var manga in data) {
+                ref.read(mangasListStateProvider.notifier).selectAll(manga);
+              }
+            },
+            icon: const Icon(Icons.select_all),
+          ),
+          IconButton(
+            onPressed: () {
+              if (data.length == mangaIdsList.length) {
+                for (var manga in data) {
+                  ref.read(mangasListStateProvider.notifier).selectSome(manga);
+                }
+                ref.read(isLongPressedStateProvider.notifier).update(false);
+              } else {
+                for (var manga in data) {
+                  ref.read(mangasListStateProvider.notifier).selectSome(manga);
+                }
+              }
+            },
+            icon: const Icon(Icons.flip_to_back_rounded),
+          ),
+        ],
+      ),
+    );
+  }
+}

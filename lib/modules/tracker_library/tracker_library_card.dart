@@ -1,0 +1,120 @@
+import 'package:flutter/material.dart';
+import 'package:flower_power/models/manga.dart';
+import 'package:flower_power/models/track.dart';
+import 'package:flower_power/models/track_search.dart';
+import 'package:flower_power/modules/tracker_library/tracker_item_card.dart';
+import 'package:flower_power/modules/widgets/bottom_text_widget.dart';
+import 'package:flower_power/utils/cached_network.dart';
+import 'package:flower_power/utils/constant.dart';
+import 'package:flower_power/utils/extensions/build_context_extensions.dart';
+
+class TrackerLibraryImageCard extends StatelessWidget {
+  final TrackSearch track;
+  final ItemType itemType;
+  final Track? libraryTrack;
+
+  const TrackerLibraryImageCard({
+    super.key,
+    required this.track,
+    required this.itemType,
+    this.libraryTrack,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final hasData = libraryTrack?.mangaId != null;
+    return GestureDetector(
+      onTap: () => _showCard(context, libraryTrack?.mangaId),
+      child: Padding(
+        padding: const EdgeInsets.only(left: 10),
+        child: Stack(
+          children: [
+            SizedBox(
+              width: 110,
+              child: Column(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(5),
+                    child: Stack(
+                      children: [
+                        cachedNetworkImage(
+                          imageUrl: toImgUrl(track.coverUrl ?? ""),
+                          width: 110,
+                          height: 150,
+                          fit: BoxFit.cover,
+                        ),
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: Text.rich(
+                            TextSpan(
+                              style: TextStyle(
+                                background: Paint()
+                                  ..color = Theme.of(context)
+                                      .scaffoldBackgroundColor
+                                      .withValues(alpha: 0.75)
+                                  ..strokeWidth = 20.0
+                                  ..strokeJoin = StrokeJoin.round
+                                  ..style = PaintingStyle.stroke,
+                              ),
+                              children: [
+                                WidgetSpan(
+                                  child: Icon(
+                                    Icons.star,
+                                    color: context.primaryColor,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: " ${track.score ?? "?"}",
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  BottomTextWidget(
+                    fontSize: 12.0,
+                    text: track.title!,
+                    isLoading: true,
+                    textColor: Theme.of(context).textTheme.bodyLarge!.color,
+                    isComfortableGrid: true,
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              width: 110,
+              height: 150,
+              color: hasData ? Colors.black.withValues(alpha: 0.7) : null,
+            ),
+            if (hasData)
+              Positioned(
+                top: 0,
+                left: 0,
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: Icon(
+                    Icons.collections_bookmark,
+                    color: context.primaryColor,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showCard(BuildContext context, int? mangaId) {
+    showDialog(
+      context: context,
+      builder: (context) =>
+          TrackerItemCard(track: track, itemType: itemType, mangaId: mangaId),
+    );
+  }
+}

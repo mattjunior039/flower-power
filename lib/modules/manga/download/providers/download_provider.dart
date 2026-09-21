@@ -1,0 +1,577 @@
+import 'dart:async';
+import 'dart:io';
+import 'dart:ui';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flower_power/eval/lib.dart';
+import 'package:flower_power/eval/model/m_bridge.dart';
+import 'package:flower_power/models/manga.dart';
+import 'package:flower_power/models/page.dart';
+import 'package:flower_power/repositories/download_repository.dart';
+import 'package:flower_power/models/chapter.dart';
+import 'package:flower_power/models/video.dart';
+import 'package:flower_power/modules/library/providers/file_scanner.dart';
+import 'package:flower_power/modules/manga/detail/providers/export_metadata.dart';
+import 'package:flower_power/modules/manga/download/providers/convert_to_cbz.dart';
+import 'package:flower_power/modules/manga/download/providers/download_gate.dart';
+import 'package:flower_power/modules/more/settings/browse/providers/browse_state_provider.dart';
+import 'package:flower_power/modules/more/settings/downloads/providers/downloads_state_provider.dart';
+import 'package:flower_power/modules/more/settings/general/providers/general_state_provider.dart';
+import 'package:flower_power/providers/storage_provider.dart';
+import 'package:flower_power/services/download_manager/download_queue_order.dart';
+import 'package:flower_power/services/download_manager/m_downloader.dart';
+import 'package:flower_power/services/get_video_list.dart';
+import 'package:flower_power/services/chapter_cache.dart';
+import 'package:flower_power/services/get_chapter_pages.dart';
+import 'package:flower_power/services/http/m_client.dart';
+import 'package:flower_power/services/download_manager/m3u8/m3u8_downloader.dart';
+import 'package:flower_power/services/download_manager/m3u8/models/download.dart';
+import 'package:flower_power/utils/chapter_recognition.dart';
+import 'package:flower_power/utils/downloaded_page_file.dart';
+import 'package:flower_power/utils/extensions/string_extensions.dart';
+import 'package:flower_power/utils/headers.dart';
+import 'package:flower_power/utils/localized_message.dart';
+import 'package:flower_power/utils/reg_exp_matcher.dart';
+import 'package:flower_power/utils/utils.dart';
+import 'package:path/path.dart' as p;
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+part 'download_provider.g.dart';
+
+@riverpod
+Future<void> addDownloadToQueue(Ref ref, {required Chapter chapter}) async {
+  await downloadRepository.enqueue(chapter);
+}
+
+@riverpod
+Future<void> downloadChapter(
+  Ref ref, {
+  required Chapter chapter,
+  bool? useWifi,
+  VoidCallback? callback,
+}) async {
+  if (!scheduleDownload(chapter.id!)) return;
+  final keepAlive = ref.keepAlive();
+
+  // Every download path funnels through here, so acquiring the shared gate is
+  // what makes the concurrency limit, per-source serialization (#645) and the
+  // start delay/jitter (#621) apply no matter how the download was started.
+  final sourceKey = chapterSourceKey(chapter);
+  var acquired = false;
+  try {
+    final maxConcurrent = ref.read(allowConcurrentDownloadsStateProvider)
+        ? ref.read(concurrentDownloadsStateProvider)
+        : 1;
+    final delaySeconds = ref.read(downloadDelaySecondsStateProvider);
+    await downloadRepository.enqueue(chapter);
+    if (downloadRepository.getById(chapter.id!)?.isDownload == true) return;
+    await DownloadGate.instance.acquire(
+      id: chapter.id!,
+      sourceKey: sourceKey,
+      maxConcurrent: maxConcurrent,
+      delaySeconds: delaySeconds,
+    );
+    acquired = true;
+    // Cancelled while it waited for a slot in the gate? Its record was deleted,
+    // so don't resurrect it.
+    if (isDownloadCancelled(chapter)) {
+      keepAlive.close();
+      return;
+    }
+    bool onlyOnWifi = useWifi ?? ref.read(onlyOnWifiStateProvider);
+    final connectivity = await Connectivity().checkConnectivity();
+    final isOnWifi =
+        connectivity.contains(ConnectivityResult.wifi) ||
+        connectivity.contains(ConnectivityResult.ethernet);
+    if (onlyOnWifi && !isOnWifi) {
+      botToast(localizedMessage((l10n) => l10n.downloads_are_limited_to_wifi));
+      keepAlive.close();
+      return;
+    }
+    final http = MClient.init(
+      reqcopyWith: {'useDartHttpClient': true, 'followRedirects': false},
+    );
+
+    List<PageUrl> pageUrls = [];
+    PageUrl? novelPage;
+    List<PageUrl> pages = [];
+    final StorageProvider storageProvider = StorageProvider();
+    await storageProvider.requestPermission();
+    final manga = chapter.manga.value!;
+    final itemType = manga.itemType;
+    final mangaMainDirectory = (await storageProvider.getMangaMainDirectory(
+      chapter,
+    ))!;
+    await storageProvider.createDirectorySafely(mangaMainDirectory.path);
+    final metadataHeaders = (manga.isLocalArchive ?? false)
+        ? null
+        : ref.read(
+            headersProvider(
+              source: manga.source!,
+              lang: manga.lang!,
+              sourceId: manga.sourceId,
+            ),
+          );
+    await exportMangaMetadata(
+      manga: manga,
+      directory: mangaMainDirectory,
+      headers: metadataHeaders,
+      onlyIfMissing: true,
+    );
+    List<Track>? subtitles;
+    bool isOk = false;
+    // Reason the download couldn't be prepared, if any — used to fail loudly
+    // instead of hanging in the wait-loop below.
+    String? startFailure;
+    final chapterName = chapter.name!.replaceForbiddenCharacters(' ');
+    final chapterDirectory = itemType == ItemType.anime
+        ? Directory(p.join(mangaMainDirectory.path, chapterName))
+        : (await storageProvider.getMangaChapterDirectory(
+            chapter,
+            mangaMainDirectory: mangaMainDirectory,
+          ))!;
+    if (itemType != ItemType.anime) {
+      await storageProvider.createDirectorySafely(chapterDirectory.path);
+    }
+    final subtitleDirectoryBase = itemType == ItemType.anime
+        ? p.join(mangaMainDirectory.path, chapterName)
+        : chapterDirectory.path;
+    Map<String, String> videoHeader = {};
+    Map<String, String> htmlHeader = {
+      "Priority": "u=0, i",
+      "User-Agent": ref.read(userAgentStateProvider),
+    };
+    bool hasM3U8File = false;
+    bool nonM3U8File = false;
+    M3u8Downloader? m3u8Downloader;
+
+    Future<void> exportCoverFromDownloadedPages() async {
+      if (itemType != ItemType.manga) return;
+      if (findMangaCoverFile(mangaMainDirectory) != null) return;
+
+      final dir = Directory(chapterDirectory.path);
+      if (!await dir.exists()) return;
+
+      final imageFiles =
+          await dir
+                .list()
+                .where(
+                  (entity) =>
+                      entity is File && isRecognizedImageFile(entity.path),
+                )
+                .cast<File>()
+                .toList()
+            ..sort((a, b) => a.path.compareTo(b.path));
+      if (imageFiles.isEmpty) return;
+
+      await exportMangaCoverFromFile(
+        directory: mangaMainDirectory,
+        imageFile: imageFiles.first,
+        onlyIfMissing: true,
+      );
+    }
+
+    Future<void> deleteEmptyAnimeEpisodeDirectory() async {
+      if (itemType != ItemType.anime) return;
+      if (!await chapterDirectory.exists()) return;
+      if (await chapterDirectory.list().isEmpty) {
+        await chapterDirectory.delete();
+      }
+    }
+
+    Future<void> processConvert() async {
+      await exportCoverFromDownloadedPages();
+      if (!ref.read(saveAsCBZArchiveStateProvider)) return;
+      try {
+        // Extract chapter number from name (e.g., "Chapter 5" → "5")
+        final chapterNumber = ChapterRecognition().parseChapterNumber(
+          chapter.manga.value!.name!,
+          chapter.name!,
+        );
+
+        final comicInfo = ComicInfoData(
+          title: chapter.name,
+          series: manga.name,
+          number: chapterNumber.toString(),
+          writer: manga.author,
+          penciller: manga.artist,
+          summary: manga.description,
+          genre: manga.genre?.join(', '),
+          translator: chapter.scanlator,
+          publishingStatusStr: manga.status.name,
+        );
+
+        await ref.read(
+          convertToCBZProvider(
+            chapterDirectory.path,
+            mangaMainDirectory.path,
+            chapterName,
+            pages.map((e) => e.fileName!).toList(),
+            comicInfo: comicInfo,
+          ).future,
+        );
+      } catch (error) {
+        botToast(localizedMessage((l10n) => l10n.failed_to_create_cbz(error)));
+      }
+    }
+
+    int lastPersistedPercent = -1;
+    var lastPersistTime = DateTime.fromMillisecondsSinceEpoch(0);
+    Future<void> setProgress(DownloadProgress progress) async {
+      if (progress.isCompleted && itemType == ItemType.manga) {
+        await processConvert();
+      }
+      final percent = progress.completed == 0 || progress.total == 0
+          ? 0
+          : (progress.completed / progress.total * 100).toInt();
+      // Progress events arrive per network chunk (hundreds per video);
+      // persisting each one floods the UI isolate with sync transactions.
+      // Only write when the visible percentage changes (rate-limited) or on
+      // completion.
+      final now = DateTime.now();
+      if (!progress.isCompleted &&
+          (percent == lastPersistedPercent ||
+              now.difference(lastPersistTime).inMilliseconds < 500)) {
+        return;
+      }
+      lastPersistedPercent = percent;
+      lastPersistTime = now;
+      final download = downloadRepository.getById(chapter.id!);
+      // Cancellation deletes the queue record. A late progress callback must
+      // not recreate it and make a cancelled item reappear.
+      if (download != null && progress.total != 0) {
+        await downloadRepository.save(
+          download
+            ..succeeded = percent
+            ..total = 100
+            ..failed = 0
+            ..isDownload = progress.isCompleted,
+        );
+      }
+    }
+
+    setProgress(DownloadProgress(0, 0, itemType));
+    void savePageUrls() {
+      // Re-downloading a chapter that is already on disk reads it locally, and
+      // local pages carry no url. Storing those placeholders would leave the
+      // chapter unreadable from its source once the download is deleted.
+      if (pageUrls.every((pageUrl) => pageUrl.url.isEmpty)) return;
+      ChapterCache().putPageListToCache(chapter, pageUrls);
+    }
+
+    if (itemType == ItemType.manga) {
+      ref
+          .read(getChapterPagesProvider(chapter: chapter).future)
+          .then((value) {
+            if (value.pageUrls.isNotEmpty) {
+              pageUrls = value.pageUrls;
+              isOk = true;
+            } else {
+              startFailure = "No pages returned by the source";
+            }
+          })
+          .catchError((Object e) {
+            startFailure = "Failed to load chapter pages: $e";
+          });
+    } else if (itemType == ItemType.anime) {
+      ref
+          .read(getVideoListProvider(episode: chapter).future)
+          .then((value) async {
+            final m3u8Urls = value.$1
+                .where(
+                  (element) =>
+                      element.originalUrl.endsWith(".m3u8") ||
+                      element.originalUrl.endsWith(".m3u"),
+                )
+                .toList();
+            final nonM3u8Urls = value.$1
+                .where((element) => element.originalUrl.isMediaVideo())
+                .toList();
+            nonM3U8File = nonM3u8Urls.isNotEmpty;
+            hasM3U8File = nonM3U8File ? false : m3u8Urls.isNotEmpty;
+            final videosUrls = nonM3U8File ? nonM3u8Urls : m3u8Urls;
+            if (videosUrls.isNotEmpty) {
+              subtitles = videosUrls.first.subtitles;
+              if (hasM3U8File) {
+                m3u8Downloader = M3u8Downloader(
+                  m3u8Url: videosUrls.first.url,
+                  downloadDir: chapterDirectory.path,
+                  headers: videosUrls.first.headers ?? {},
+                  subtitles: subtitles,
+                  subDownloadDir: subtitleDirectoryBase,
+                  fileName: p.join(mangaMainDirectory.path, "$chapterName.mp4"),
+                  chapter: chapter,
+                );
+              } else {
+                pageUrls = [PageUrl(videosUrls.first.url)];
+              }
+              videoHeader.addAll(videosUrls.first.headers ?? {});
+              isOk = true;
+            } else {
+              // Got a video list but nothing matched .m3u8/.m3u or a known video
+              // extension — record why instead of spinning forever below.
+              startFailure = value.$1.isEmpty
+                  ? "No videos returned by the source"
+                  : "No downloadable URL among ${value.$1.length} video(s) "
+                        "(none matched .m3u8/.m3u or a known extension)";
+            }
+          })
+          .catchError((Object e) {
+            startFailure = "Failed to load the video list: $e";
+          });
+    } else if (itemType == ItemType.novel && chapter.url != null) {
+      final manga = chapter.manga.value!;
+      final source = getSource(
+        manga.lang!,
+        manga.source!,
+        manga.sourceId,
+        installedOnly: true,
+      )!;
+      final chapterUrl = "${source.baseUrl}${chapter.url!.getUrlWithoutDomain}";
+      final cookie = MClient.getCookiesPref(chapterUrl);
+      final headers = htmlHeader;
+      if (cookie.isNotEmpty) {
+        final userAgent = ref.read(userAgentStateProvider);
+        headers.addAll(cookie);
+        headers[HttpHeaders.userAgentHeader] = userAgent;
+      }
+      final res = await http.get(Uri.parse(chapterUrl), headers: headers);
+      if (res.headers.containsKey("Location")) {
+        novelPage = PageUrl(res.headers["Location"]!);
+      } else {
+        novelPage = PageUrl(chapterUrl);
+      }
+      isOk = true;
+    }
+
+    // Wait for the source to resolve pages/video — but never forever. Bail on
+    // a recorded failure or after a timeout so a bad/unmatched URL surfaces an
+    // error instead of a silent, endless stall.
+    final startDeadline = DateTime.now().add(const Duration(seconds: 45));
+    await Future.doWhile(() async {
+      await Future.delayed(const Duration(seconds: 1));
+      if (isOk == true || startFailure != null) {
+        return false;
+      }
+      if (DateTime.now().isAfter(startDeadline)) {
+        startFailure = "Timed out preparing the download";
+        return false;
+      }
+      return true;
+    });
+
+    if (!isOk) {
+      botToast(startFailure ?? "Couldn't start the download");
+      await markDownloadFailed(chapter);
+      if (callback != null) callback();
+      keepAlive.close();
+      return;
+    }
+
+    // Cancelled during the (up to 45s) prep wait? Bail before writing files.
+    if (isDownloadCancelled(chapter)) {
+      keepAlive.close();
+      return;
+    }
+
+    if (pageUrls.isNotEmpty) {
+      // A stalled or failed attempt can leave a partial single-file download
+      // (anime .mp4, novel .html) on disk. The existence check below would then
+      // treat it as already downloaded and mark it complete — a truncated but
+      // "finished" file. If this chapter's download record is not actually
+      // complete, delete any such leftover first so it re-downloads fresh.
+      final downloadRecord = downloadRepository.getById(chapter.id!);
+      if (!(downloadRecord?.isDownload ?? false)) {
+        for (final leftover in [
+          File(p.join(mangaMainDirectory.path, "$chapterName.mp4")),
+          File(p.join(mangaMainDirectory.path, "$chapterName.html")),
+        ]) {
+          if (leftover.existsSync()) {
+            try {
+              leftover.deleteSync();
+            } catch (_) {}
+          }
+        }
+      }
+      bool cbzFileExist =
+          (await File(p.join(mangaMainDirectory.path, "${chapter.name}.cbz"))
+                  .exists() ||
+              await File(p.join(mangaMainDirectory.path, "$chapterName.cbz"))
+                  .exists()) &&
+          ref.read(saveAsCBZArchiveStateProvider);
+      bool mp4FileExist = await File(
+        p.join(mangaMainDirectory.path, "$chapterName.mp4"),
+      ).exists();
+      bool htmlFileExist = await File(
+        p.join(mangaMainDirectory.path, "$chapterName.html"),
+      ).exists();
+      if (!cbzFileExist && itemType == ItemType.manga ||
+          !mp4FileExist && itemType == ItemType.anime ||
+          !htmlFileExist && itemType == ItemType.novel) {
+        final mainDirectory = (await storageProvider.getDirectory())!;
+        storageProvider.createDirectorySafely(mainDirectory.path);
+        for (var index = 0; index < pageUrls.length; index++) {
+          if (Platform.isAndroid) {
+            if (!(await File(p.join(mainDirectory.path, ".nomedia"))
+                .exists())) {
+              await File(p.join(mainDirectory.path, ".nomedia")).create();
+            }
+          }
+          final page = pageUrls[index];
+          final cookie = MClient.getCookiesPref(page.url);
+          final headers = itemType == ItemType.manga
+              ? ref.read(
+                  headersProvider(
+                    source: manga.source!,
+                    lang: manga.lang!,
+                    sourceId: manga.sourceId,
+                  ),
+                )
+              : itemType == ItemType.anime
+              ? videoHeader
+              : htmlHeader;
+          if (cookie.isNotEmpty) {
+            final userAgent = ref.read(userAgentStateProvider);
+            headers.addAll(cookie);
+            headers[HttpHeaders.userAgentHeader] = userAgent;
+          }
+          Map<String, String> pageHeaders = headers;
+          pageHeaders.addAll(page.headers ?? {});
+
+          if (itemType == ItemType.manga) {
+            final existing = findDownloadedPageFile(chapterDirectory, index);
+            if (existing == null) {
+              pages.add(
+                PageUrl(
+                  page.url.trim(),
+                  headers: pageHeaders,
+                  // No extension - the real one is only knowable once the
+                  // response arrives (see download_isolate_pool.dart), which
+                  // appends whatever detectImageExtension() finds. Every
+                  // later lookup goes through findDownloadedPageFile, not
+                  // this literal path.
+                  fileName: p.join(chapterDirectory.path, padIndex(index)),
+                ),
+              );
+            }
+          } else if (itemType == ItemType.anime) {
+            final file = File(
+              p.join(mangaMainDirectory.path, "$chapterName.mp4"),
+            );
+            if (!file.existsSync()) {
+              pages.add(
+                PageUrl(
+                  page.url.trim(),
+                  headers: pageHeaders,
+                  fileName: p.join(mangaMainDirectory.path, "$chapterName.mp4"),
+                ),
+              );
+            }
+          }
+        }
+      }
+
+      if (pages.isEmpty && pageUrls.isNotEmpty) {
+        await processConvert();
+        savePageUrls();
+        await setProgress(DownloadProgress(1, 1, itemType, isCompleted: true));
+      } else {
+        savePageUrls();
+        await MDownloader(
+          chapter: chapter,
+          pageUrls: pages,
+          subtitles: subtitles,
+          subDownloadDir: subtitleDirectoryBase,
+        ).download((progress) {
+          setProgress(progress);
+        });
+        await exportCoverFromDownloadedPages();
+      }
+    } else if (itemType == ItemType.novel) {
+      final file = File(p.join(chapterDirectory.path, "$chapterName.html"));
+      if (!file.existsSync() && novelPage != null) {
+        final source = getSource(
+          manga.lang!,
+          manga.source!,
+          manga.sourceId,
+          installedOnly: true,
+        )!;
+        p.join(chapterDirectory.path, "$chapterName.html");
+        final html = await withExtensionService(
+          source,
+          ref.read(androidProxyServerStateProvider),
+          (service) =>
+              service.getHtmlContent(chapter.manga.value!.name!, chapter.url!),
+        );
+        if (html.isNotEmpty) {
+          await file.writeAsString(html);
+          await setProgress(
+            DownloadProgress(1, 1, itemType, isCompleted: true),
+          );
+        }
+      } else {
+        await setProgress(DownloadProgress(1, 1, itemType, isCompleted: true));
+      }
+    } else if (hasM3U8File) {
+      await m3u8Downloader?.download((progress) {
+        setProgress(progress);
+      });
+    }
+    if (callback != null) {
+      callback();
+    }
+    await deleteEmptyAnimeEpisodeDirectory();
+    await ref.read(scanLocalLibraryProvider.future);
+    keepAlive.close();
+  } catch (e) {
+    // Surface the failure instead of swallowing it — a silent catch here is
+    // exactly how "downloads just don't start" stays invisible.
+    if (!isDownloadCancelled(chapter)) botToast("Download failed: $e");
+    await markDownloadFailed(chapter);
+    if (callback != null) callback();
+    keepAlive.close();
+  } finally {
+    if (acquired) DownloadGate.instance.release(sourceKey);
+    unscheduleDownload(chapter.id);
+    keepAlive.close();
+  }
+}
+
+@riverpod
+Future<void> processDownloads(Ref ref, {bool? useWifi}) async {
+  final keepAlive = ref.keepAlive();
+  try {
+    // Fire in the user's manual queue order (#514) so the initial slots go to
+    // the highest-priority chapters; the gate then keeps honoring live reorders
+    // as later slots free.
+    final ongoingDownloads = DownloadQueueOrder.sorted(
+      await downloadRepository.getPendingStarted(),
+    );
+    if (!ref.mounted) return;
+    // Kick off every pending download. The shared DownloadGate enforces the
+    // concurrency limit, per-source serialization (#645), the start delay
+    // (#621) and the manual order (#514), so they can all be fired at once and
+    // will queue themselves instead of being paced here (which used to block on
+    // the main isolate).
+    for (final downloadItem in ongoingDownloads) {
+      if (!downloadItem.chapter.isLoaded) {
+        try {
+          downloadItem.chapter.loadSync();
+        } catch (_) {}
+      }
+      final chapter = downloadItem.chapter.value;
+      if (chapter == null) continue;
+      if (isDownloadScheduled(chapter.id)) continue;
+      final provider = downloadChapterProvider(
+        chapter: chapter,
+        useWifi: useWifi,
+      );
+      ref.invalidate(provider);
+      ref.read(provider);
+    }
+  } catch (error) {
+    botToast('Could not start download queue: $error');
+  } finally {
+    keepAlive.close();
+  }
+}

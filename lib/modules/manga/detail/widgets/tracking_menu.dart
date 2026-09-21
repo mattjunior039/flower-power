@@ -1,0 +1,125 @@
+import 'package:draggable_menu/draggable_menu.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flower_power/models/manga.dart';
+import 'package:flower_power/models/track.dart';
+import 'package:flower_power/models/track_preference.dart';
+import 'package:flower_power/models/track_search.dart';
+import 'package:flower_power/modules/manga/detail/providers/track_state_providers.dart';
+import 'package:flower_power/modules/manga/detail/widgets/tracker_search_widget.dart';
+import 'package:flower_power/modules/manga/detail/widgets/tracker_widget.dart';
+import 'package:flower_power/modules/more/settings/appearance/providers/pure_black_dark_mode_state_provider.dart';
+import 'package:flower_power/modules/more/settings/track/widgets/track_listile.dart';
+import 'package:flower_power/repositories/track_repository.dart';
+import 'package:flower_power/providers/l10n_providers.dart';
+import 'package:flower_power/utils/extensions/build_context_extensions.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
+
+/// Opens the tracker list bottom sheet for [manga]. [entries] is the set of
+/// logged-in tracker services. Each row shows the current tracking state
+/// ([TrackerWidget]) or an "add tracker" tile that runs a search. Shared by the
+/// classic manga detail and the TV anime detail so both behave identically.
+void openTrackingMenu({
+  required BuildContext context,
+  required Manga manga,
+  required List<TrackPreference> entries,
+}) {
+  DraggableMenu.open(
+    context,
+    Consumer(
+      builder: (context, ref, _) {
+        final isPureBlack = ref.watch(pureBlackDarkModeStateProvider);
+        final theme = Theme.of(context);
+        final bgColor = context.isLight || !isPureBlack
+            ? theme.scaffoldBackgroundColor.withValues(alpha: 0.9)
+            : theme.cardColor;
+
+        return DraggableMenu(
+          ui: ClassicDraggableMenu(
+            radius: 20,
+            barItem: Container(),
+            color: theme.scaffoldBackgroundColor,
+          ),
+          allowToShrink: true,
+          child: Material(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(20),
+            clipBehavior: Clip.antiAlias,
+            child: Padding(
+              // Breathing room at the bottom, plus clearance for the system
+              // navigation bar / gesture area so the last tracker row is not
+              // flush against (or behind) the on-screen buttons on Android.
+              padding: EdgeInsets.fromLTRB(
+                8,
+                8,
+                8,
+                8 + MediaQuery.viewPaddingOf(context).bottom,
+              ),
+              child: SuperListView.separated(
+                padding: const EdgeInsets.all(0),
+                itemCount: entries.length,
+                primary: false,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  return StreamBuilder(
+                    stream: trackRepository.watchBySyncIdAndMangaId(
+                      entries[index].syncId,
+                      manga.id!,
+                    ),
+                    builder: (context, snapshot) {
+                      List<Track>? trackRes = snapshot.hasData
+                          ? snapshot.data
+                          : [];
+                      return trackRes!.isNotEmpty
+                          ? TrackerWidget(
+                              mangaId: manga.id!,
+                              syncId: entries[index].syncId!,
+                              trackRes: trackRes.first,
+                              itemType: manga.itemType,
+                            )
+                          : TrackListile(
+                              text: l10nLocalizations(context)!.add_tracker,
+                              onTap: () async {
+                                final trackSearch =
+                                    await trackersSearchDraggableMenu(
+                                      context,
+                                      itemType: manga.itemType,
+                                      track: Track(
+                                        status: TrackStatus.planToRead,
+                                        syncId: entries[index].syncId!,
+                                        title: manga.name!,
+                                      ),
+                                    ) as TrackSearch?;
+                                if (trackSearch != null) {
+                                  await ref
+                                      .read(
+                                        trackStateProvider(
+                                          track: null,
+                                          itemType: manga.itemType,
+                                          widgetRef: ref,
+                                        ).notifier,
+                                      )
+                                      .setTrackSearch(
+                                        trackSearch,
+                                        manga.id!,
+                                        entries[index].syncId!,
+                                      );
+                                }
+                              },
+                              id: entries[index].syncId!,
+                              entries: const [],
+                            );
+                    },
+                  );
+                },
+                separatorBuilder: (BuildContext context, int index) {
+                  return const Divider();
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    ),
+  );
+}

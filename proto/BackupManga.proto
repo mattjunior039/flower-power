@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+import "BackupChapter.proto";
+import "BackupHistory.proto";
+
+message BackupManga {
+    int64 source = 1;
+    string url = 2;
+    string title = 3;
+    optional string artist = 4;
+    optional string author = 5;
+    optional string description = 6;
+    repeated string genre = 7;
+    int32 status = 8;
+    optional string thumbnailUrl = 9;
+    int64 dateAdded = 13;
+    int32 viewer = 14;
+    repeated BackupChapter chapters = 16;
+    repeated int64 categories = 17;
+    bool favorite = 100;
+    int32 chapterFlags = 101;
+    optional int32 viewer_flags = 103;
+    repeated BackupHistory history = 104;
+    int32 updateStrategy = 105;
+    int64 lastModifiedAt = 106;
+    optional int64 favoriteModifiedAt = 107;
+    repeated string excludedScanlators = 108;
+    int64 version = 109;
+}

@@ -1,0 +1,69 @@
+import 'package:flower_power/repositories/chapter_repository.dart';
+import 'package:flower_power/repositories/settings_repository.dart';
+import 'package:flower_power/models/chapter.dart';
+import 'package:flower_power/models/settings.dart';
+import 'package:flower_power/modules/manga/reader/mixins/chapter_reader_settings_mixin.dart';
+import 'package:flower_power/modules/manga/reader/mixins/chapter_controller_mixin.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+part 'novel_reader_controller_provider.g.dart';
+
+@riverpod
+class NovelReaderController extends _$NovelReaderController
+    with ChapterControllerMixin, ChapterReaderSettingsMixin {
+  @override
+  void build({required Chapter chapter}) {}
+
+  // Keep incognitoMode as a final field (read once, not on every access).
+  @override
+  final bool incognitoMode = settingsRepository.current.incognitoMode!;
+
+  // ---------------------------------------------------------------------------
+  // Reader mode
+  // ---------------------------------------------------------------------------
+
+  ReaderMode getReaderMode() {
+    final personalReaderModeList =
+        getIsarSetting().personalReaderModeList ?? [];
+    final personalReaderMode = personalReaderModeList.where(
+      (element) => element.mangaId == getManga().id,
+    );
+    if (personalReaderMode.isNotEmpty) {
+      return personalReaderMode.first.readerMode;
+    }
+    return ReaderMode.verticalContinuous;
+  }
+
+  void setReaderMode(ReaderMode newReaderMode) {
+    List<PersonalReaderMode>? personalReaderModeLists = [];
+    for (var personalReaderMode
+        in getIsarSetting().personalReaderModeList ?? []) {
+      if (personalReaderMode.mangaId != getManga().id) {
+        personalReaderModeLists.add(personalReaderMode);
+      }
+    }
+    personalReaderModeLists.add(
+      PersonalReaderMode()
+        ..mangaId = getManga().id
+        ..readerMode = newReaderMode,
+    );
+    settingsRepository.save(
+      getIsarSetting()..personalReaderModeList = personalReaderModeLists,
+    );
+    onSettingsMutated();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Scroll-position tracking
+  // ---------------------------------------------------------------------------
+
+  void setChapterOffset(double newOffset, double maxOffset, bool save) {
+    if (incognitoMode) return;
+    final isRead = (newOffset / (maxOffset != 0 ? maxOffset : 1)) >= 0.9;
+    if (isRead || save) {
+      final ch = chapter;
+      ch.isRead = isRead;
+      ch.lastPageRead = (maxOffset != 0 ? newOffset / maxOffset : 0).toString();
+      chapterRepository.save(ch);
+    }
+  }
+}

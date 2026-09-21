@@ -1,0 +1,526 @@
+import 'dart:convert';
+
+import 'package:http_interceptor/http_interceptor.dart';
+import 'package:flower_power/eval/model/filter.dart';
+import 'package:flower_power/eval/model/source_preference.dart';
+import 'package:flower_power/repositories/source_repository.dart';
+import 'package:flower_power/eval/aidoku/service.dart';
+import 'package:flower_power/models/manga.dart';
+import 'package:flower_power/models/settings.dart';
+import 'package:flower_power/models/source.dart';
+import 'package:flower_power/services/http/m_client.dart';
+import 'package:flower_power/services/isolate_service.dart';
+import 'package:flower_power/services/extension_store_service.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:flower_power/utils/log/logger.dart';
+
+Future<void> fetchSourcesList({
+  int? id,
+  required bool refresh,
+  required String androidProxyServer,
+  required bool autoUpdateExtensions,
+  required ItemType itemType,
+  required Repo? repo,
+}) async {
+  final http = MClient.init(reqcopyWith: {'useDartHttpClient': true});
+  final url = repo?.jsonUrl;
+  if (url == null) return;
+
+  if (repo != null &&
+      (repo.name == null ||
+          repo.name!.isEmpty ||
+          repo.name == '.dist' ||
+          repo.name == 'dist')) {
+    final uri = Uri.tryParse(url);
+    if (uri != null &&
+        uri.host == 'raw.githubusercontent.com' &&
+        uri.pathSegments.length >= 2) {
+      repo.name = uri.pathSegments[1];
+    }
+  }
+
+  final info = await PackageInfo.fromPlatform();
+
+  List<Source> sourceList = [];
+
+  // Try parsing with ExtensionStoreService (.pb, NetworkExtensionStore JSON, or legacy min.json)
+  final storeResult = await ExtensionStoreService.fetchStore(url, http);
+  if (storeResult != null && storeResult.sources.isNotEmpty) {
+    sourceList = storeResult.sources
+        .where(
+          (source) =>
+              source.itemType == itemType &&
+              (source.sourceCodeLanguage == SourceCodeLanguage.aidoku ||
+                  source.sourceCodeLanguage == SourceCodeLanguage.lnreader ||
+                  source.appMinVerReq == null ||
+                  source.appMinVerReq!.isEmpty ||
+                  compareVersions(info.version, source.appMinVerReq!) > -1),
+        )
+        .toList();
+  } else {
+    // Fallback parsing for non-Mihon direct JSON lists (LNReader or custom format)
+    try {
+      final req = await http.get(Uri.parse(url));
+      if (req.statusCode == 200) {
+        final decoded = jsonDecode(req.body);
+        if (decoded is List) {
+          sourceList = decoded
+              .expand((e) sync* {
+                if (e['id'] is String &&
+                    e['name'] != null &&
+                    e['site'] != null &&
+                    e['lang'] != null &&
+                    e['version'] != null &&
+                    e['url'] != null &&
+                    e['iconUrl'] != null) {
+                  final src = Source.fromJson(e)
+                    ..apiUrl = ''
+                    ..appMinVerReq = ''
+                    ..dateFormat = ''
+                    ..dateFormatLocale = ''
+                    ..hasCloudflare = false
+                    ..headers = ''
+                    ..isActive = true
+                    ..isAdded = false
+                    ..isFullData = false
+                    ..isNsfw = false
+                    ..isPinned = false
+                    ..lastUsed = false
+                    ..sourceCode = ''
+                    ..typeSource = ''
+                    ..versionLast = e['version'] ?? '0.0.1'
+                    ..isObsolete = false
+                    ..isLocal = false
+                    ..lang = _convertLang(e)
+                    ..baseUrl = e['site']
+                    ..sourceCodeUrl = e['url']
+                    ..sourceCodeLanguage = SourceCodeLanguage.lnreader
+                    ..itemType = ItemType.novel
+                    ..notes = "Performance might be poor due to limited engine";
+                  src.id =
+                      'lnreader-plugin-"${src.name}"."${src.lang}"'.hashCode;
+                  yield src;
+                } else {
+                  yield Source.fromJson(e);
+                }
+              })
+              .where(
+                (source) =>
+                    source.itemType == itemType &&
+                    (source.appMinVerReq == null ||
+                        source.appMinVerReq!.isEmpty ||
+                        compareVersions(info.version, source.appMinVerReq!) >
+                            -1),
+              )
+              .toList();
+        }
+      }
+    } catch (e, st) {
+      // A failure here drops sources from the list with no sign of why.
+      AppLogger.log(
+        'fetchSourcesList: filtering sources failed: $e\n$st',
+        logLevel: LogLevel.error,
+      );
+    }
+  }
+
+  if (id != null) {
+    final matchingSource = sourceList.firstWhere(
+      (source) => source.id == id,
+      orElse: () => Source(),
+    );
+    if (matchingSource.id != null && matchingSource.sourceCodeUrl!.isNotEmpty) {
+      await _updateSource(matchingSource, androidProxyServer, repo, itemType);
+    }
+  } else {
+    for (var source in sourceList) {
+      final existingSource = await sourceRepository.findByIdAsync(source.id!);
+      if (existingSource == null) {
+        await _addNewSource(source, repo, itemType);
+        continue;
+      }
+      final shouldUpdate =
+          existingSource.isAdded! &&
+          compareVersions(existingSource.version!, source.version!) < 0;
+      if (!shouldUpdate) continue;
+      if (autoUpdateExtensions) {
+        await _updateSource(source, androidProxyServer, repo, itemType);
+      } else {
+        await sourceRepository.save(
+          existingSource..versionLast = source.version,
+        );
+      }
+    }
+  }
+
+  checkIfSourceIsObsolete(sourceList, repo!, itemType);
+}
+
+Future<void> _updateSource(
+  Source source,
+  String androidProxyServer,
+  Repo? repo,
+  ItemType itemType,
+) async {
+  final http = MClient.init(reqcopyWith: {'useDartHttpClient': true});
+  final req = await http.get(Uri.parse(source.sourceCodeUrl!));
+  final sourceCode =
+      (source.sourceCodeLanguage == SourceCodeLanguage.mihon ||
+          source.sourceCodeLanguage == SourceCodeLanguage.aidoku)
+      ? base64.encode(req.bodyBytes)
+      : req.body;
+
+  Map<String, String> headers = {};
+  bool? supportLatest;
+  FilterList? filterList;
+  List<SourcePreference>? preferenceList;
+  source.sourceCode = sourceCode;
+  if (source.sourceCodeLanguage == SourceCodeLanguage.mihon) {
+    headers = await fetchHeadersDalvik(http, source, androidProxyServer);
+    supportLatest = await fetchSupportLatestDalvik(
+      http,
+      source,
+      androidProxyServer,
+    );
+    filterList = await fetchFilterListDalvik(http, source, androidProxyServer);
+    preferenceList = await fetchPreferencesDalvik(
+      http,
+      source,
+      androidProxyServer,
+    );
+  } else if (source.sourceCodeLanguage == SourceCodeLanguage.aidoku) {
+    final service = AidokuExtensionService(source);
+    try {
+      headers = service.getHeaders();
+      supportLatest = service.supportsLatest;
+      filterList = await service.fetchFilterList();
+    } finally {
+      service.dispose();
+    }
+  } else {
+    headers = await getIsolateService.get<Map<String, String>>(
+      source: source,
+      serviceType: 'getHeaders',
+    );
+  }
+
+  final existing =
+      source.id != null ? sourceRepository.getById(source.id!) : null;
+  final updatedSource = Source()
+    ..headers = jsonEncode(headers)
+    ..supportLatest = supportLatest
+    ..filterList = filterList != null ? jsonEncode(filterList.toJson()) : null
+    ..preferenceList = preferenceList != null
+        ? jsonEncode(preferenceList.map((e) => e.toJson()).toList())
+        : null
+    ..isAdded = true
+    ..isPinned = existing?.isPinned ?? false
+    ..lastUsed = existing?.lastUsed ?? false
+    ..sourceCode = sourceCode
+    ..sourceCodeUrl = source.sourceCodeUrl
+    ..id = source.id
+    ..apiUrl = source.apiUrl
+    ..baseUrl = source.baseUrl
+    ..dateFormat = source.dateFormat
+    ..dateFormatLocale = source.dateFormatLocale
+    ..hasCloudflare = source.hasCloudflare
+    ..iconUrl = source.iconUrl
+    ..typeSource = source.typeSource
+    ..lang = source.lang
+    ..isNsfw = source.isNsfw
+    ..name = source.name
+    ..version = source.version
+    ..versionLast = source.version
+    ..itemType = itemType
+    ..isFullData = source.isFullData ?? false
+    ..appMinVerReq = source.appMinVerReq
+    ..sourceCodeLanguage = source.sourceCodeLanguage
+    ..additionalParams = source.additionalParams ?? ""
+    ..isObsolete = false
+    ..notes = source.notes
+    ..repo = repo
+    ..updatedAt = DateTime.now().millisecondsSinceEpoch;
+
+  await sourceRepository.save(updatedSource);
+}
+
+Future<void> _addNewSource(Source source, Repo? repo, ItemType itemType) async {
+  final newSource = Source()
+    ..sourceCodeUrl = source.sourceCodeUrl
+    ..id = source.id
+    ..sourceCode = source.sourceCode
+    ..apiUrl = source.apiUrl
+    ..baseUrl = source.baseUrl
+    ..dateFormat = source.dateFormat
+    ..dateFormatLocale = source.dateFormatLocale
+    ..hasCloudflare = source.hasCloudflare
+    ..iconUrl = source.iconUrl
+    ..typeSource = source.typeSource
+    ..lang = source.lang
+    ..isNsfw = source.isNsfw
+    ..name = source.name
+    ..version = source.version
+    ..versionLast = source.version
+    ..itemType = itemType
+    ..sourceCodeLanguage = source.sourceCodeLanguage
+    ..isFullData = source.isFullData ?? false
+    ..appMinVerReq = source.appMinVerReq
+    ..isObsolete = false
+    ..notes = source.notes
+    ..repo = repo
+    ..updatedAt = DateTime.now().millisecondsSinceEpoch;
+  await sourceRepository.save(newSource);
+}
+
+Future<void> checkIfSourceIsObsolete(
+  List<Source> sourceList,
+  Repo repo,
+  ItemType itemType,
+) async {
+  if (sourceList.isEmpty) return;
+
+  final sources = await sourceRepository.getNonLocalByItemType(itemType);
+
+  if (sources.isEmpty) return;
+
+  final sourceIds = sourceList
+      .where((e) => e.id != null)
+      .map((e) => e.id!)
+      .toSet();
+
+  if (sourceIds.isEmpty) return;
+
+  final toUpdate = <Source>[];
+  final toDelete = <int>[];
+  for (var source in sources) {
+    final isNowObsolete =
+        !sourceIds.contains(source.id) && source.repo?.jsonUrl == repo.jsonUrl;
+
+    if (!(source.isAdded ?? false) && isNowObsolete) {
+      // Not installed and gone from the repo: nothing to install, so
+      // remove the dead row instead of leaving it in the browse list.
+      toDelete.add(source.id!);
+      continue;
+    }
+    if (source.isObsolete != isNowObsolete) {
+      source.isObsolete = isNowObsolete;
+      source.updatedAt = DateTime.now().millisecondsSinceEpoch;
+      toUpdate.add(source);
+    }
+  }
+  if (toUpdate.isNotEmpty) {
+    await sourceRepository.putAll(toUpdate);
+  }
+  if (toDelete.isNotEmpty) {
+    await sourceRepository.deleteAll(toDelete);
+  }
+}
+
+int compareVersions(String version1, String version2) {
+  final clean1 = version1
+      .trim()
+      .replaceFirst(RegExp(r'^[vV]'), '')
+      .split(RegExp(r'[-+]'))
+      .first;
+  final clean2 = version2
+      .trim()
+      .replaceFirst(RegExp(r'^[vV]'), '')
+      .split(RegExp(r'[-+]'))
+      .first;
+
+  final v1Parts = clean1.split('.');
+  final v2Parts = clean2.split('.');
+  final maxLength = v1Parts.length > v2Parts.length
+      ? v1Parts.length
+      : v2Parts.length;
+
+  for (var i = 0; i < maxLength; i++) {
+    final v1Value = i < v1Parts.length ? (int.tryParse(v1Parts[i]) ?? 0) : 0;
+    final v2Value = i < v2Parts.length ? (int.tryParse(v2Parts[i]) ?? 0) : 0;
+
+    final comparison = v1Value.compareTo(v2Value);
+    if (comparison != 0) return comparison;
+  }
+
+  return 0;
+}
+
+Future<Map<String, String>> fetchHeadersDalvik(
+  InterceptedClient client,
+  Source source,
+  String androidProxyServer,
+) async {
+  try {
+    final name = source.itemType == ItemType.anime ? "Anime" : "Manga";
+    final res = await client.post(
+      Uri.parse("$androidProxyServer/dalvik"),
+      body: jsonEncode({
+        "method": "headers$name",
+        "data": source.sourceCode,
+        "lang": source.lang,
+        "sourceId": source.id?.toString(),
+      }),
+    );
+    final data = jsonDecode(res.body) as List;
+    final Map<String, String> headers = {};
+    for (var i = 0; i + 1 < data.length; i += 2) {
+      headers[data[i]] = data[i + 1];
+    }
+    return headers;
+  } catch (_) {
+    return {};
+  }
+}
+
+Future<bool> fetchSupportLatestDalvik(
+  InterceptedClient client,
+  Source source,
+  String androidProxyServer,
+) async {
+  try {
+    final name = source.itemType == ItemType.anime ? "Anime" : "Manga";
+    final res = await client.post(
+      Uri.parse("$androidProxyServer/dalvik"),
+      body: jsonEncode({
+        "method": "supportLatest$name",
+        "data": source.sourceCode,
+        "lang": source.lang,
+        "sourceId": source.id?.toString(),
+      }),
+    );
+    return res.body.trim() == "true";
+  } catch (_) {
+    return false;
+  }
+}
+
+Future<FilterList?> fetchFilterListDalvik(
+  InterceptedClient client,
+  Source source,
+  String androidProxyServer,
+) async {
+  try {
+    final name = source.itemType == ItemType.anime ? "Anime" : "Manga";
+    final res = await client.post(
+      Uri.parse("$androidProxyServer/dalvik"),
+      body: jsonEncode({
+        "method": "filters$name",
+        "data": source.sourceCode,
+        "lang": source.lang,
+        "sourceId": source.id?.toString(),
+      }),
+    );
+    final data = jsonDecode(res.body) as List;
+
+    return FilterList(filtersFromJson(data));
+  } catch (_) {
+    return null;
+  }
+}
+
+List<dynamic> filtersFromJson(List<dynamic> json) {
+  return json.expand((e) sync* {
+    if (e['name'] is String &&
+        e['state'] is Map<String, dynamic> &&
+        e['values'] is List) {
+      yield SortFilter(
+        "${e['name']}Filter",
+        e['name'],
+        SortState(e['state']['index'], e['state']['ascending'], null),
+        (e['values'] as List)
+            .map((e) => SelectFilterOption(e, e, null))
+            .toList(),
+        null,
+      );
+    } else if (e['name'] is String &&
+        e['state'] is int &&
+        (e['values'] is List || e['vals'] is List)) {
+      yield SelectFilter(
+        "${e['name']}Filter",
+        e['name'],
+        e['state'],
+        e['vals'] is List
+            ? (e['vals'] as List)
+                  .map((e) => SelectFilterOption(e['first'], e['second'], null))
+                  .toList()
+            : e['values'] is List
+            ? (e['values'] as List)
+                  .map(
+                    (e) => (e is Map)
+                        ? SelectFilterOption(e['value'], e['value'], null)
+                        : SelectFilterOption(e, e, null),
+                  )
+                  .toList()
+            : [],
+        "SelectFilter",
+      );
+    } else if (e['name'] is String && e['state'] is bool) {
+      yield CheckBoxFilter(
+        null,
+        e['name'],
+        e['id'] ?? e['name'],
+        null,
+        state: e['state'],
+      );
+    } else if (e['included'] is bool &&
+        e['ignored'] is bool &&
+        e['excluded'] is bool) {
+      yield TriStateFilter(
+        null,
+        e['name'],
+        e['id'] ?? e['name'],
+        null,
+        state: e['state'],
+      );
+    } else if (e['name'] is String && e['state'] is List) {
+      yield GroupFilter(
+        "${e['name']}Filter",
+        e['name'],
+        filtersFromJson((e['state'] as List)),
+        "GroupFilter",
+      );
+    } else if (e['name'] is String && e['state'] is String) {
+      yield TextFilter(
+        "${e['name']}Filter",
+        e['name'],
+        null,
+        state: e['state'],
+      );
+    } else if (e['name'] is String && e['state'] is int) {
+      yield HeaderFilter(e['name'], "${e['name']}Filter");
+    }
+  }).toList();
+}
+
+Future<List<SourcePreference>?> fetchPreferencesDalvik(
+  InterceptedClient client,
+  Source source,
+  String androidProxyServer,
+) async {
+  try {
+    final name = source.itemType == ItemType.anime ? "Anime" : "Manga";
+    final res = await client.post(
+      Uri.parse("$androidProxyServer/dalvik"),
+      body: jsonEncode({
+        "method": "preferences$name",
+        "data": source.sourceCode,
+        "lang": source.lang,
+        "sourceId": source.id?.toString(),
+      }),
+    );
+    final data = jsonDecode(res.body) as List;
+    return data
+        .map(
+          (e) => SourcePreference.fromJson(e)
+            ..id = null
+            ..sourceId = source.id,
+        )
+        .toList();
+  } catch (_) {
+    return null;
+  }
+}
+
+String _convertLang(dynamic e) {
+  return ExtensionStoreService.convertLnreaderLang(e);
+}

@@ -1,0 +1,105 @@
+import 'package:file_picker/file_picker.dart';
+import 'package:flower_power/models/chapter.dart';
+import 'package:flower_power/repositories/chapter_repository.dart';
+import 'package:flower_power/repositories/manga_repository.dart';
+import 'package:flower_power/models/manga.dart';
+import 'package:flower_power/services/torrent_server.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+part 'add_torrent.g.dart';
+
+@riverpod
+Future addTorrentFromUrlOrFromFile(
+  Ref ref,
+  Manga? mManga, {
+  required bool init,
+  String? url,
+}) async {
+  List<PlatformFile>? files;
+  if (url == null) {
+    files = await FilePicker.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['torrent'],
+      linuxOptions: const LinuxOptions(lockParentWindow: true),
+    );
+  }
+
+  if (files?.isNotEmpty ?? false || url != null) {
+    String torrentName = "";
+    if (url != null) {
+      torrentName = (await MTorrentServer().getTorrentPlaylist(
+        url,
+        null,
+      )).$1.first.quality;
+    }
+    final dateNow = DateTime.now().millisecondsSinceEpoch;
+    final manga =
+        mManga ??
+        Manga(
+          favorite: true,
+          source: 'torrent',
+          author: '',
+          itemType: ItemType.anime,
+          genre: [],
+          imageUrl: '',
+          lang: '',
+          link: '',
+          name: url != null ? torrentName : _getName(files!.first.path!),
+          dateAdded: dateNow,
+          lastUpdate: dateNow,
+          status: Status.unknown,
+          description: '',
+          isLocalArchive: true,
+          artist: '',
+          updatedAt: dateNow,
+          sourceId: null,
+        );
+
+    if (url != null) {
+      manga.customCoverImage = null;
+      mangaRepository.writeTransaction(() {
+        mangaRepository.putSync(manga);
+        final chapters = Chapter(
+          name: torrentName,
+          url: url,
+          mangaId: manga.id,
+          updatedAt: DateTime.now().millisecondsSinceEpoch,
+        )..manga.value = manga;
+        chapterRepository.putSync(chapters);
+        chapters.manga.saveSync();
+      });
+    } else {
+      for (var file in files!.reversed) {
+        String name = _getName(file.path!);
+
+        if (init) {
+          manga.customCoverImage = null;
+        }
+
+        mangaRepository.writeTransaction(() {
+          mangaRepository.putSync(manga);
+          final chapters = Chapter(
+            name: name,
+            archivePath: file.path,
+            mangaId: manga.id,
+            updatedAt: DateTime.now().millisecondsSinceEpoch,
+          )..manga.value = manga;
+          chapterRepository.putSync(chapters);
+          chapters.manga.saveSync();
+        });
+      }
+    }
+  }
+  return "";
+}
+
+String _getName(String path) {
+  return path
+      .split('/')
+      .last
+      .split("\\")
+      .last
+      .replaceAll(
+        RegExp(r'\.(mp4|mov|avi|flv|wmv|mpeg|mkv|cbz|zip|cbt|tar|torrent)'),
+        '',
+      );
+}

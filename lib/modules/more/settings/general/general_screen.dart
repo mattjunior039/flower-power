@@ -1,0 +1,924 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flower_power/main.dart';
+import 'package:flower_power/modules/more/settings/general/providers/memory_probe_provider.dart';
+import 'package:flower_power/models/settings.dart';
+import 'package:flower_power/modules/more/providers/algorithm_weights_state_provider.dart';
+import 'package:flower_power/modules/more/settings/browse/providers/browse_state_provider.dart';
+import 'package:flower_power/modules/more/settings/general/providers/general_state_provider.dart';
+import 'package:flower_power/providers/l10n_providers.dart';
+import 'package:flower_power/modules/more/settings/general/providers/doh_provider_notifier.dart';
+import 'package:flower_power/services/http/doh/doh_custom_store.dart';
+import 'package:flower_power/services/http/cf_proxy_store.dart';
+import 'package:flower_power/services/library_updater.dart';
+import 'package:flower_power/services/http/doh/doh_providers.dart';
+import 'package:flower_power/utils/extensions/build_context_extensions.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
+import 'package:flower_power/modules/widgets/tv_escapable_slider.dart';
+import 'package:flower_power/utils/platform_utils.dart';
+import 'package:flower_power/modules/onboarding/providers/onboarding_state_provider.dart';
+
+class GeneralScreen extends ConsumerStatefulWidget {
+  const GeneralScreen({super.key});
+
+  @override
+  ConsumerState<GeneralScreen> createState() => _GeneralStateScreen();
+}
+
+class _GeneralStateScreen extends ConsumerState<GeneralScreen> {
+  int _genre = 0;
+  int _setting = 0;
+  int _synopsis = 0;
+  int _theme = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    final algorithmWeights = ref.read(algorithmWeightsStateProvider);
+    _genre = algorithmWeights.genre!;
+    _setting = algorithmWeights.setting!;
+    _synopsis = algorithmWeights.synopsis!;
+    _theme = algorithmWeights.theme!;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = l10nLocalizations(context);
+    final customDns = ref.watch(customDnsStateProvider);
+    final userAgent = ref.watch(userAgentStateProvider);
+    final enableDiscordRpc = ref.watch(enableDiscordRpcStateProvider);
+    final hideDiscordRpcInIncognito = ref.watch(
+      hideDiscordRpcInIncognitoStateProvider,
+    );
+    final rpcShowReadingWatchingProgress = ref.watch(
+      rpcShowReadingWatchingProgressStateProvider,
+    );
+    final rpcShowTitleState = ref.watch(rpcShowTitleStateProvider);
+    final rpcShowCoverImage = ref.watch(rpcShowCoverImageStateProvider);
+    final showNavDoubleTapTooltip = ref.watch(
+      showNavDoubleTapTooltipStateProvider,
+    );
+    final autoUpdateInterval = ref.watch(
+      autoLibraryUpdateIntervalStateProvider,
+    );
+    final autoUpdateWifiOnly = ref.watch(
+      autoLibraryUpdateWifiOnlyStateProvider,
+    );
+    final doHState = ref.watch(doHProviderStateProvider);
+    final availableProviders = ref.watch(availableDoHProvidersProvider);
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n!.general)),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            ListTile(
+              onTap: () => _showAutoLibraryUpdateDialog(
+                context,
+                ref,
+                autoUpdateInterval,
+              ),
+              title: Text(l10n.auto_library_update),
+              subtitle: Text(
+                // When it's off, say what the setting does; the word "Never"
+                // on its own doesn't explain what would otherwise happen.
+                autoUpdateInterval == 0
+                    ? l10n.auto_library_update_subtitle
+                    : _autoLibraryUpdateLabel(context, autoUpdateInterval),
+                style: TextStyle(fontSize: 11, color: context.secondaryColor),
+              ),
+            ),
+            if (autoUpdateInterval > 0)
+              SwitchListTile(
+                value: autoUpdateWifiOnly,
+                title: Text(l10n.auto_library_update_wifi_only),
+                subtitle: Text(
+                  l10n.auto_library_update_wifi_only_subtitle,
+                  style: TextStyle(fontSize: 11, color: context.secondaryColor),
+                ),
+                onChanged: (value) => ref
+                    .read(autoLibraryUpdateWifiOnlyStateProvider.notifier)
+                    .set(value),
+              ),
+            ExpansionTile(
+              title: Text(l10n.dns_over_https),
+              initiallyExpanded: doHState.enabled,
+              trailing: IgnorePointer(
+                child: Switch(value: doHState.enabled, onChanged: (_) {}),
+              ),
+              onExpansionChanged: (value) => ref
+                  .read(doHProviderStateProvider.notifier)
+                  .setDoHEnabled(value),
+              children: [
+                ListTile(
+                  title: Text(l10n.dns_provider),
+                  subtitle: Text(
+                    doHState.providerId == DoHProviders.customId
+                        ? (DohCustomStore.url.trim().isEmpty
+                              ? 'Custom'
+                              : 'Custom · ${DohCustomStore.url.trim()}')
+                        : (DoHProviders.byId[doHState.providerId ?? 0]?.name ??
+                              DoHProviders.cloudflare.name),
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: context.secondaryColor,
+                    ),
+                  ),
+                  onTap: () {
+                    // Default to Cloudflare (id 0) to match the subtitle, so the
+                    // dialog doesn't preselect a different provider than shown.
+                    final providerId = doHState.providerId ?? 0;
+                    final rootContext = context;
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text(l10n.dns_provider),
+                          content: SizedBox(
+                            width: context.width(0.8),
+                            child: RadioGroup(
+                              groupValue: providerId,
+                              onChanged: (value) {
+                                Navigator.pop(context);
+                                if (value == DoHProviders.customId) {
+                                  _showCustomDohDialog(
+                                    rootContext,
+                                    ref,
+                                    DohCustomStore.url,
+                                  );
+                                } else {
+                                  ref
+                                      .read(doHProviderStateProvider.notifier)
+                                      .setDoHProvider(value!);
+                                }
+                              },
+                              child: SuperListView.builder(
+                                shrinkWrap: true,
+                                itemCount: availableProviders.length + 1,
+                                itemBuilder: (context, index) {
+                                  // Last row: the user-supplied custom endpoint.
+                                  if (index == availableProviders.length) {
+                                    return const RadioListTile(
+                                      dense: true,
+                                      contentPadding: EdgeInsets.all(0),
+                                      value: DoHProviders.customId,
+                                      title: Text('Custom'),
+                                    );
+                                  }
+                                  final provider = availableProviders[index];
+                                  return RadioListTile(
+                                    dense: true,
+                                    contentPadding: const EdgeInsets.all(0),
+                                    value: provider.id,
+                                    title: Text(provider.name),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                          actions: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                TextButton(
+                                  onPressed: () async {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    l10n.cancel,
+                                    style: TextStyle(
+                                      color: context.primaryColor,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+            if (!doHState.enabled)
+              ListTile(
+                onTap: () => _showCustomDnsDialog(context, ref, customDns),
+                title: Text(l10n.custom_dns),
+                subtitle: Text(
+                  customDns,
+                  style: TextStyle(fontSize: 11, color: context.secondaryColor),
+                ),
+              ),
+            ListTile(
+              onTap: () => _showDefaultUserAgentDialog(context, ref, userAgent),
+              title: Text(context.l10n.default_user_agent),
+              subtitle: Text(
+                userAgent,
+                style: TextStyle(fontSize: 11, color: context.secondaryColor),
+              ),
+            ),
+            // A way back to the first-run screen. It is the only way to see it
+            // once it has been dismissed, and on a debug build, where a fresh
+            // install skips it, the only way to see it at all.
+            ListTile(
+              onTap: () => ref
+                  .read(onboardingCompletedStateProvider.notifier)
+                  .showAgain(),
+              title: Text(context.l10n.onboarding_replay),
+              subtitle: Text(
+                context.l10n.onboarding_replay_subtitle,
+                style: TextStyle(fontSize: 11, color: context.secondaryColor),
+              ),
+            ),
+            ListTile(
+              onTap: () => _showCfProxyDialog(context),
+              title: const Text('Cloudflare bypass proxy'),
+              subtitle: Text(
+                CfProxyStore.url.isEmpty
+                    ? 'Optional FlareSolverr / Byparr URL'
+                    : CfProxyStore.url,
+                style: TextStyle(fontSize: 11, color: context.secondaryColor),
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(10.0),
+              decoration: BoxDecoration(
+                border: Border.all(width: 3.0, color: context.primaryColor),
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        context.l10n.recommendations_weights,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(width: 20),
+                      OutlinedButton.icon(
+                        onPressed: () {
+                          final defaultWeights = AlgorithmWeights();
+                          setState(() {
+                            _genre = defaultWeights.genre!;
+                            _setting = defaultWeights.setting!;
+                            _synopsis = defaultWeights.synopsis!;
+                            _theme = defaultWeights.theme!;
+                          });
+                          ref
+                              .read(algorithmWeightsStateProvider.notifier)
+                              .set(defaultWeights);
+                        },
+                        label: Text(context.l10n.reset),
+                        icon: const Icon(Icons.restore),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(context.l10n.recommendations_weights_genre),
+                        Text(
+                          (_genre / 100).toStringAsFixed(2),
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: context.secondaryColor,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        TvEscapableSlider(
+                          enabled: isTv,
+                          onDecrease: () {
+                            setState(() => _genre = (_genre - 1).clamp(0, 100));
+                            ref
+                                .read(algorithmWeightsStateProvider.notifier)
+                                .setWeights(genre: _genre);
+                          },
+                          onIncrease: () {
+                            setState(() => _genre = (_genre + 1).clamp(0, 100));
+                            ref
+                                .read(algorithmWeightsStateProvider.notifier)
+                                .setWeights(genre: _genre);
+                          },
+                          child: SliderTheme(
+                            data: SliderTheme.of(context).copyWith(
+                              overlayShape: const RoundSliderOverlayShape(
+                                overlayRadius: 5.0,
+                              ),
+                            ),
+                            child: Slider.adaptive(
+                              min: 0,
+                              max: 100,
+                              value: _genre.toDouble(),
+                              onChanged: (value) {
+                                HapticFeedback.vibrate();
+                                setState(() {
+                                  _genre = value.toInt();
+                                });
+                              },
+                              onChangeEnd: (value) => ref
+                                  .read(algorithmWeightsStateProvider.notifier)
+                                  .setWeights(genre: _genre),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(context.l10n.recommendations_weights_setting),
+                        Text(
+                          (_setting / 100).toStringAsFixed(2),
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: context.secondaryColor,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        TvEscapableSlider(
+                          enabled: isTv,
+                          onDecrease: () {
+                            setState(
+                              () => _setting = (_setting - 1).clamp(0, 100),
+                            );
+                            ref
+                                .read(algorithmWeightsStateProvider.notifier)
+                                .setWeights(setting: _setting);
+                          },
+                          onIncrease: () {
+                            setState(
+                              () => _setting = (_setting + 1).clamp(0, 100),
+                            );
+                            ref
+                                .read(algorithmWeightsStateProvider.notifier)
+                                .setWeights(setting: _setting);
+                          },
+                          child: SliderTheme(
+                            data: SliderTheme.of(context).copyWith(
+                              overlayShape: const RoundSliderOverlayShape(
+                                overlayRadius: 5.0,
+                              ),
+                            ),
+                            child: Slider.adaptive(
+                              min: 0,
+                              max: 100,
+                              value: _setting.toDouble(),
+                              onChanged: (value) {
+                                HapticFeedback.vibrate();
+                                setState(() {
+                                  _setting = value.toInt();
+                                });
+                              },
+                              onChangeEnd: (value) => ref
+                                  .read(algorithmWeightsStateProvider.notifier)
+                                  .setWeights(setting: _setting),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(context.l10n.recommendations_weights_synopsis),
+                        Text(
+                          (_synopsis / 100).toStringAsFixed(2),
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: context.secondaryColor,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        TvEscapableSlider(
+                          enabled: isTv,
+                          onDecrease: () {
+                            setState(
+                              () => _synopsis = (_synopsis - 1).clamp(0, 100),
+                            );
+                            ref
+                                .read(algorithmWeightsStateProvider.notifier)
+                                .setWeights(synopsis: _synopsis);
+                          },
+                          onIncrease: () {
+                            setState(
+                              () => _synopsis = (_synopsis + 1).clamp(0, 100),
+                            );
+                            ref
+                                .read(algorithmWeightsStateProvider.notifier)
+                                .setWeights(synopsis: _synopsis);
+                          },
+                          child: SliderTheme(
+                            data: SliderTheme.of(context).copyWith(
+                              overlayShape: const RoundSliderOverlayShape(
+                                overlayRadius: 5.0,
+                              ),
+                            ),
+                            child: Slider.adaptive(
+                              min: 0,
+                              max: 100,
+                              value: _synopsis.toDouble(),
+                              onChanged: (value) {
+                                HapticFeedback.vibrate();
+                                setState(() {
+                                  _synopsis = value.toInt();
+                                });
+                              },
+                              onChangeEnd: (value) => ref
+                                  .read(algorithmWeightsStateProvider.notifier)
+                                  .setWeights(synopsis: _synopsis),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(context.l10n.recommendations_weights_theme),
+                        Text(
+                          (_theme / 100).toStringAsFixed(2),
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: context.secondaryColor,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        TvEscapableSlider(
+                          enabled: isTv,
+                          onDecrease: () {
+                            setState(() => _theme = (_theme - 1).clamp(0, 100));
+                            ref
+                                .read(algorithmWeightsStateProvider.notifier)
+                                .setWeights(theme: _theme);
+                          },
+                          onIncrease: () {
+                            setState(() => _theme = (_theme + 1).clamp(0, 100));
+                            ref
+                                .read(algorithmWeightsStateProvider.notifier)
+                                .setWeights(theme: _theme);
+                          },
+                          child: SliderTheme(
+                            data: SliderTheme.of(context).copyWith(
+                              overlayShape: const RoundSliderOverlayShape(
+                                overlayRadius: 5.0,
+                              ),
+                            ),
+                            child: Slider.adaptive(
+                              min: 0,
+                              max: 100,
+                              value: _theme.toDouble(),
+                              onChanged: (value) {
+                                HapticFeedback.vibrate();
+                                setState(() {
+                                  _theme = value.toInt();
+                                });
+                              },
+                              onChangeEnd: (value) => ref
+                                  .read(algorithmWeightsStateProvider.notifier)
+                                  .setWeights(theme: _theme),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SwitchListTile(
+              value: ref.watch(memoryOverlayVisibleProvider),
+              title: Text(l10n.memory_overlay),
+              subtitle: Text(l10n.memory_overlay_subtitle),
+              onChanged: (value) =>
+                  ref.read(memoryOverlayVisibleProvider.notifier).set(value),
+            ),
+            SwitchListTile(
+              value: showNavDoubleTapTooltip,
+              title: Text(l10n.show_nav_double_tap_tooltip),
+              subtitle: Text(l10n.show_nav_double_tap_tooltip_subtitle),
+              onChanged: (value) => ref
+                  .read(showNavDoubleTapTooltipStateProvider.notifier)
+                  .set(value),
+            ),
+            SwitchListTile(
+              value: enableDiscordRpc,
+              title: Text(l10n.enable_discord_rpc),
+              onChanged: (value) {
+                ref.read(enableDiscordRpcStateProvider.notifier).set(value);
+                if (value) {
+                  discordRpc?.connect(ref);
+                } else {
+                  discordRpc?.disconnect();
+                }
+              },
+            ),
+            SwitchListTile(
+              value: hideDiscordRpcInIncognito,
+              title: Text(l10n.hide_discord_rpc_incognito),
+              onChanged: (value) {
+                ref
+                    .read(hideDiscordRpcInIncognitoStateProvider.notifier)
+                    .set(value);
+              },
+            ),
+            SwitchListTile(
+              value: rpcShowReadingWatchingProgress,
+              title: Text(l10n.rpc_show_reading_watching_progress),
+              onChanged: (value) {
+                ref
+                    .read(rpcShowReadingWatchingProgressStateProvider.notifier)
+                    .set(value);
+              },
+            ),
+            SwitchListTile(
+              value: rpcShowTitleState,
+              title: Text(l10n.rpc_show_title),
+              onChanged: (value) {
+                ref.read(rpcShowTitleStateProvider.notifier).set(value);
+              },
+            ),
+            SwitchListTile(
+              value: rpcShowCoverImage,
+              title: Text(l10n.rpc_show_cover_image),
+              onChanged: (value) {
+                ref.read(rpcShowCoverImageStateProvider.notifier).set(value);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// The label for one of [libraryUpdateIntervals], in hours.
+  String _autoLibraryUpdateLabel(BuildContext context, int hours) {
+    final l10n = context.l10n;
+    return switch (hours) {
+      12 => l10n.auto_library_update_12_hours,
+      24 => l10n.auto_library_update_daily,
+      48 => l10n.auto_library_update_2_days,
+      168 => l10n.auto_library_update_weekly,
+      _ => l10n.auto_library_update_never,
+    };
+  }
+
+  void _showAutoLibraryUpdateDialog(
+    BuildContext context,
+    WidgetRef ref,
+    int current,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.auto_library_update),
+        content: SizedBox(
+          width: context.width(0.8),
+          child: RadioGroup(
+            groupValue: current,
+            onChanged: (value) {
+              Navigator.pop(context);
+              if (value == null) return;
+              ref
+                  .read(autoLibraryUpdateIntervalStateProvider.notifier)
+                  .set(value);
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final hours in libraryUpdateIntervals)
+                  RadioListTile(
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    value: hours,
+                    title: Text(_autoLibraryUpdateLabel(context, hours)),
+                  ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(context.l10n.cancel),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showCustomDohDialog(
+    BuildContext context,
+    WidgetRef ref,
+    String customDohUrl,
+  ) {
+    final controller = TextEditingController(text: customDohUrl);
+    String url = customDohUrl;
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          final parsed = Uri.tryParse(url.trim());
+          final isValid =
+              parsed != null &&
+              parsed.scheme == 'https' &&
+              parsed.host.isNotEmpty;
+          return AlertDialog(
+            title: const Text('Custom DoH URL', style: TextStyle(fontSize: 24)),
+            content: SizedBox(
+              width: context.width(0.8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: TextFormField(
+                      controller: controller,
+                      autofocus: true,
+                      keyboardType: TextInputType.url,
+                      onChanged: (value) => setState(() => url = value),
+                      decoration: InputDecoration(
+                        hintText: 'https://example.com/dns-query',
+                        helperText: 'Must be an https DoH (JSON) endpoint',
+                        filled: false,
+                        contentPadding: const EdgeInsets.all(12),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(width: 0.4),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: const BorderSide(),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: context.width(1),
+                    child: ElevatedButton(
+                      onPressed: isValid
+                          ? () {
+                              ref
+                                  .read(doHProviderStateProvider.notifier)
+                                  .setCustomDoH(url.trim());
+                              Navigator.pop(context);
+                            }
+                          : null,
+                      child: Text(context.l10n.dialog_confirm),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _showCfProxyDialog(BuildContext context) {
+    final controller = TextEditingController(text: CfProxyStore.url);
+    String url = CfProxyStore.url;
+    showDialog(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, setLocalState) {
+          final trimmed = url.trim();
+          final isValid =
+              trimmed.isEmpty ||
+              trimmed.startsWith('http://') ||
+              trimmed.startsWith('https://');
+          return AlertDialog(
+            title: const Text(
+              'Cloudflare bypass proxy',
+              style: TextStyle(fontSize: 24),
+            ),
+            content: SizedBox(
+              width: context.width(0.8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: TextFormField(
+                      controller: controller,
+                      autofocus: true,
+                      keyboardType: TextInputType.url,
+                      onChanged: (value) => setLocalState(() => url = value),
+                      decoration: InputDecoration(
+                        hintText: 'http://localhost:8191/v1',
+                        helperText:
+                            'FlareSolverr / Byparr endpoint. Leave empty to '
+                            'disable.',
+                        helperMaxLines: 2,
+                        filled: false,
+                        contentPadding: const EdgeInsets.all(12),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(width: 0.4),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: const BorderSide(),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: context.width(1),
+                    child: ElevatedButton(
+                      onPressed: isValid
+                          ? () {
+                              CfProxyStore.setUrl(trimmed);
+                              Navigator.pop(dialogContext);
+                              if (mounted) setState(() {});
+                            }
+                          : null,
+                      child: Text(context.l10n.dialog_confirm),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _showCustomDnsDialog(
+    BuildContext context,
+    WidgetRef ref,
+    String customDns,
+  ) {
+    final dnsController = TextEditingController(text: customDns);
+    String dns = customDns;
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: Text(
+              context.l10n.custom_dns,
+              style: const TextStyle(fontSize: 30),
+            ),
+            content: SizedBox(
+              width: context.width(0.8),
+              height: context.height(0.3),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: TextFormField(
+                      controller: dnsController,
+                      autofocus: true,
+                      onChanged: (value) => setState(() {
+                        dns = value;
+                      }),
+                      decoration: InputDecoration(
+                        hintText: "8.8.8.8",
+                        filled: false,
+                        contentPadding: const EdgeInsets.all(12),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(width: 0.4),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: const BorderSide(),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: SizedBox(
+                      width: context.width(1),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          ref.read(customDnsStateProvider.notifier).set(dns);
+                          Navigator.pop(context);
+                        },
+                        child: Text(context.l10n.dialog_confirm),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+void _showDefaultUserAgentDialog(
+  BuildContext context,
+  WidgetRef ref,
+  String ua,
+) {
+  final uaController = TextEditingController(text: ua);
+  showDialog(
+    context: context,
+    builder: (context) => StatefulBuilder(
+      builder: (context, setState) {
+        return AlertDialog(
+          title: Text(
+            context.l10n.default_user_agent,
+            style: const TextStyle(fontSize: 30),
+          ),
+          content: SizedBox(
+            width: context.width(0.8),
+            height: context.height(0.3),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: TextFormField(
+                    controller: uaController,
+                    autofocus: true,
+
+                    decoration: InputDecoration(
+                      hintText: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)...",
+                      filled: false,
+                      contentPadding: const EdgeInsets.all(12),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(width: 0.4),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5),
+                        borderSide: const BorderSide(),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: SizedBox(
+                    width: context.width(1),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        ref
+                            .watch(userAgentStateProvider.notifier)
+                            .set(uaController.text);
+                        if (!context.mounted) return;
+                        Navigator.pop(context);
+                      },
+                      child: Text(context.l10n.dialog_confirm),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    ),
+  );
+}

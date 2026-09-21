@@ -1,0 +1,195 @@
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:flutter/material.dart';
+import 'package:flower_power/eval/model/m_bridge.dart';
+import 'package:flower_power/models/manga.dart';
+import 'package:flower_power/utils/manga_cover_actions.dart';
+import 'package:flower_power/modules/manga/reader/u_chap_data_preload.dart';
+import 'package:flower_power/providers/l10n_providers.dart';
+import 'package:flower_power/providers/storage_provider.dart';
+import 'package:flower_power/utils/downloaded_page_file.dart';
+import 'package:flower_power/utils/extensions/build_context_extensions.dart';
+import 'package:flower_power/utils/extensions/others.dart';
+import 'package:flower_power/utils/share.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
+import 'package:path/path.dart' as p;
+
+/// Bottom sheet dialog for long-press actions on manga images.
+///
+/// Provides options to:
+/// - Set image as cover
+/// - Share image
+/// - Save image to gallery
+class ImageActionsDialog {
+  /// Shows the image actions dialog.
+  ///
+  /// Parameters:
+  /// - [context]: Build context
+  /// - [data]: The page data containing the image
+  /// - [manga]: The manga the image belongs to
+  /// - [chapterName]: Name of the chapter (for file naming)
+  static Future<void> show({
+    required BuildContext context,
+    required UChapDataPreload data,
+    required Manga manga,
+    required String chapterName,
+  }) async {
+    final imageBytes = await data.getImageBytes;
+    if (imageBytes == null || !context.mounted) return;
+
+    final name = "${manga.name} $chapterName - ${data.pageIndex}".replaceAll(
+      RegExp(r'[^a-zA-Z0-9 .()\-\s]'),
+      '_',
+    );
+
+    showModalBottomSheet(
+      context: context,
+      constraints: BoxConstraints(maxWidth: context.width(1)),
+      builder: (context) => _ImageActionsSheet(
+        imageBytes: imageBytes,
+        manga: manga,
+        fileName: name,
+      ),
+    );
+  }
+}
+
+class _ImageActionsSheet extends StatelessWidget {
+  final Uint8List imageBytes;
+  final Manga manga;
+  final String fileName;
+
+  const _ImageActionsSheet({
+    required this.imageBytes,
+    required this.manga,
+    required this.fileName,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SuperListView(
+      shrinkWrap: true,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+            color: context.themeData.scaffoldBackgroundColor,
+          ),
+          child: Column(
+            children: [
+              // Handle bar
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  height: 7,
+                  width: 35,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(6),
+                    color: context.secondaryColor.withValues(alpha: 0.4),
+                  ),
+                ),
+              ),
+              // Action buttons
+              Row(
+                children: [
+                  _ActionButton(
+                    label: context.l10n.set_as_cover,
+                    icon: Icons.image_outlined,
+                    onPressed: () => _setAsCover(context),
+                  ),
+                  _ActionButton(
+                    label: context.l10n.share,
+                    icon: Icons.share_outlined,
+                    onPressed: () => _shareImage(context),
+                  ),
+                  _ActionButton(
+                    label: context.l10n.save,
+                    icon: Icons.save_outlined,
+                    onPressed: () => _saveImage(context),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _setAsCover(BuildContext context) async {
+    final confirmed = await confirmUseAsMangaCover(context);
+    if (!confirmed || !context.mounted) return;
+    await applyMangaCover(context, manga, imageBytes);
+    if (context.mounted) Navigator.pop(context);
+  }
+
+  Future<void> _shareImage(BuildContext context) async {
+    if (!context.mounted) return;
+
+    final ext = detectImageExtension(imageBytes);
+    final mime = mimeTypeForImageExtension(ext);
+
+    final box = context.findRenderObject() as RenderBox?;
+    await shareOrCopy(
+      ShareParams(
+        files: [
+          XFile.fromData(imageBytes, name: '$fileName$ext', mimeType: mime),
+        ],
+        sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+      ),
+      fallbackName: '$fileName$ext',
+    );
+  }
+
+  Future<void> _saveImage(BuildContext context) async {
+    final dir = await StorageProvider().getGalleryDirectory();
+    if (dir == null) return;
+    final ext = detectImageExtension(imageBytes);
+
+    final file = File(p.join(dir.path, "$fileName$ext"));
+    await file.writeAsBytes(imageBytes, flush: true);
+
+    if (context.mounted) botToast(context.l10n.picture_saved, second: 3);
+  }
+}
+
+class _ActionButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  const _ActionButton({
+    required this.label,
+    required this.icon,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.all(15),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            shadowColor: Colors.transparent,
+          ),
+          onPressed: onPressed,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(padding: const EdgeInsets.all(4), child: Icon(icon)),
+              Text(label),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

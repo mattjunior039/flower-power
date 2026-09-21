@@ -1,0 +1,165 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:flower_power/models/track.dart';
+import 'package:flower_power/models/track_search.dart';
+import 'package:flower_power/modules/tracker_library/tracker_library_card.dart';
+import 'package:flower_power/modules/tracker_library/tracker_library_section.dart';
+import 'package:flower_power/modules/widgets/error_state.dart';
+import 'package:flower_power/providers/l10n_providers.dart';
+import 'package:flower_power/repositories/track_repository.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
+
+class TrackerSectionScreen extends StatefulWidget {
+  final TrackLibrarySection section;
+
+  const TrackerSectionScreen({super.key, required this.section});
+
+  @override
+  State<TrackerSectionScreen> createState() => _TrackerSectionScreenState();
+}
+
+class _TrackerSectionScreenState extends State<TrackerSectionScreen> {
+  String _errorMessage = "";
+  bool _isLoading = true;
+  List<TrackSearch> _tracks = [];
+  late StreamSubscription<List<Track>> _trackStreamSub;
+  Map<int, Track> _trackIndex = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+    _subscribeToTracks();
+  }
+
+  void _subscribeToTracks() {
+    _trackStreamSub = trackRepository
+        .watchByItemTypeWithMangaId(widget.section.itemType)
+        .listen((tracks) {
+          if (mounted) {
+            setState(() {
+              _trackIndex = {
+                for (final t in tracks)
+                  if (t.mediaId != null) t.mediaId!: t,
+              };
+            });
+          }
+        });
+  }
+
+  @override
+  void didUpdateWidget(covariant TrackerSectionScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.section.itemType != widget.section.itemType) {
+      _trackStreamSub.cancel();
+      _subscribeToTracks();
+    }
+    _fetchData();
+  }
+
+  @override
+  void dispose() {
+    _trackStreamSub.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = l10nLocalizations(context)!;
+    return Scaffold(
+      body: IntrinsicHeight(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(dense: true, title: Text(widget.section.name)),
+            _isLoading
+                ? const SizedBox(
+                    height: 60,
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                : Builder(
+                    builder: (context) {
+                      if (_errorMessage.isNotEmpty) {
+                        return ErrorState(
+                          compact: true,
+                          detail: _errorMessage,
+                          onRetry: () {
+                            setState(() {
+                              _isLoading = true;
+                              _errorMessage = "";
+                            });
+                            _fetchData();
+                          },
+                        );
+                      }
+                      if (_tracks.isNotEmpty) {
+                        return SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              for (final track in _tracks)
+                                TrackerLibraryImageCard(
+                                  track: track,
+                                  itemType: widget.section.itemType,
+                                  libraryTrack: _trackIndex[track.mediaId],
+                                ),
+                            ],
+                          ),
+                        );
+                      }
+                      return SizedBox(
+                        height: 60,
+                        child: Center(child: Text(l10n.no_result)),
+                      );
+                    },
+                  ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _fetchData() async {
+    final box = await Hive.openBox("tracker_library");
+    final key =
+        "${widget.section.syncId}-${widget.section.itemType.name}-${widget.section.name}";
+    if (_checkCache(box, key)) return;
+    try {
+      _errorMessage = "";
+      _tracks = await widget.section.func() ?? [];
+      box.put(key, _tracks);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.toString();
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  bool _checkCache(Box<dynamic> box, String key) {
+    if (!widget.section.isSearch && box.containsKey(key)) {
+      final temp = box.get(key);
+      if (temp is List<TrackSearch>) {
+        _errorMessage = "";
+        _tracks = temp;
+        if (mounted) setState(() => _isLoading = false);
+        return true;
+      }
+    }
+    return false;
+  }
+}
+
+class SuperPrecalculationPolicy extends ExtentPrecalculationPolicy {
+  @override
+  bool shouldPrecalculateExtents(ExtentPrecalculationContext context) {
+    return context.numberOfItems < 100;
+  }
+}

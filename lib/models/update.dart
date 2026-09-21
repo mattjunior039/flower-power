@@ -1,0 +1,50 @@
+import 'package:isar_community/isar.dart';
+import 'package:flower_power/models/chapter.dart';
+part 'update.g.dart';
+
+@collection
+@Name("Update")
+class Update {
+  Id? id;
+
+  @Index()
+  int? clientId;
+
+  @Index()
+  int? mangaId;
+
+  String? chapterName;
+
+  final chapter = IsarLink<Chapter>();
+
+  String? date;
+
+  int? updatedAt;
+
+  Update({
+    this.id = Isar.autoIncrement,
+    this.clientId,
+    required this.mangaId,
+    required this.chapterName,
+    required this.date,
+    this.updatedAt = 0,
+  });
+
+  Update.fromJson(Map<String, dynamic> json) {
+    clientId = json['clientId'];
+    id = json['id'];
+    mangaId = json['mangaId'];
+    chapterName = json['chapterName'];
+    date = json['date'];
+    updatedAt = json['updatedAt'];
+  }
+
+  Map<String, dynamic> toJson() => {
+    'clientId': clientId,
+    'id': id,
+    'mangaId': mangaId,
+    'chapterName': chapterName,
+    'date': date,
+    'updatedAt': updatedAt ?? 0,
+  };
+}

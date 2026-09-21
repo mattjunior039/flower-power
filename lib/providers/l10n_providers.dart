@@ -1,0 +1,40 @@
+import 'package:flutter/material.dart';
+import 'package:flower_power/models/settings.dart';
+import 'package:flower_power/repositories/settings_repository.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flower_power/l10n/generated/app_localizations.dart';
+part 'l10n_providers.g.dart';
+
+@riverpod
+class L10nLocaleState extends _$L10nLocaleState {
+  @override
+  Locale build() {
+    final locale = _getLocale();
+    return Locale(locale.languageCode ?? "en", locale.countryCode ?? "");
+  }
+
+  L10nLocale _getLocale() {
+    return settingsRepository.current.locale ??
+        L10nLocale(languageCode: "en", countryCode: "");
+  }
+
+  void setLocale(Locale locale) async {
+    settingsRepository.update(
+      (s) => s.locale = L10nLocale(
+        languageCode: locale.languageCode,
+        countryCode: locale.countryCode,
+      ),
+    );
+    state = locale;
+  }
+}
+
+AppLocalizations? l10nLocalizations(BuildContext context) =>
+    AppLocalizations.of(context);
+Locale currentLocale(BuildContext context) {
+  return Localizations.localeOf(context);
+}
+
+extension L10nExtension on BuildContext {
+  AppLocalizations get l10n => AppLocalizations.of(this)!;
+}

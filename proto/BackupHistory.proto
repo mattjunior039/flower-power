@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+message BackupHistory {
+    string url = 1;
+    int64 lastRead = 2;
+    int64 readDuration = 3;
+}
