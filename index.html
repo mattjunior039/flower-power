@@ -223,11 +223,6 @@
                 </a>
             </div>
 
-            <div id="download-stats" style="margin-top: -4rem; margin-bottom: 4rem; font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', monospace; font-size: 0.85rem; color: #888; display: flex; align-items: center; gap: 0.5rem;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                <span id="download-count">Loading total downloads...</span>
-            </div>
-
             <div class="instructions-wrapper">
                 <section class="os-section">
                     <h2>macOS Deployment</h2>
@@ -259,24 +254,5 @@
             </div>
         </main>
     </div>
-
-    <script>
-        fetch('https://api.github.com/repos/mattjunior039/flower-power/releases')
-            .then(response => response.json())
-            .then(releases => {
-                let totalDownloads = 0;
-                for (const release of releases) {
-                    if (release.assets) {
-                        for (const asset of release.assets) {
-                            totalDownloads += asset.download_count;
-                        }
-                    }
-                }
-                document.getElementById('download-count').innerText = totalDownloads.toLocaleString() + " total downloads";
-            })
-            .catch(error => {
-                document.getElementById('download-count').innerText = "Downloads unavailable";
-            });
-    </script>
 </body>
 </html>
