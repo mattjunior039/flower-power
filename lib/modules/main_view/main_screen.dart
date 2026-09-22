@@ -1248,7 +1248,6 @@ class _TvRailHeader extends StatelessWidget {
             appIconAssets[2],
             width: 30,
             height: 30,
-            color: accent,
             filterQuality: FilterQuality.medium,
           ),
           const SizedBox(height: 8),
@@ -1261,7 +1260,6 @@ class _TvRailHeader extends StatelessWidget {
             child: Text(
               'BETA',
               style: TextStyle(
-                color: accent,
                 fontSize: 8,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.2,

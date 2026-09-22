@@ -2415,10 +2415,10 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get auth_unlock_msg =>
-      'flower power\'yi kilitlemek için kimliğinizi doğrulayın';
+      'FlowerPower\'yi kilitlemek için kimliğinizi doğrulayın';
 
   @override
-  String get app_locked => 'flower power kilitli';
+  String get app_locked => 'FlowerPower kilitli';
 
   @override
   String get auth_to_continue => 'Devam etmek için kimliğinizi doğrulayın';
@@ -2900,7 +2900,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get something_went_wrong => 'Bir şeyler ters gitti';
 
   @override
-  String get startup_failed => 'flower power başlatılamadı';
+  String get startup_failed => 'FlowerPower başlatılamadı';
 
   @override
   String sources_with_no_results(int count) {
@@ -3148,7 +3148,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get error_reports_report => 'GitHub\'da Bildir';
 
   @override
-  String get error_reports_banner => 'flower power bir hatayla karşılaştı';
+  String get error_reports_banner => 'FlowerPower bir hatayla karşılaştı';
 
   @override
   String get error_reports_banner_action => 'Görüntüle';
@@ -3164,7 +3164,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get error_reports_extension_failure =>
-      'Bu hata flower power\'den değil, bir uzantıdan kaynaklandı. Uzantılar bu kaynağı yüklediğiniz deponun yöneticileri tarafından yazılır ve sürdürülür, bu nedenle düzeltmenin oraya yapılması gerekir.';
+      'Bu hata FlowerPower\'den değil, bir uzantıdan kaynaklandı. Uzantılar bu kaynağı yüklediğiniz deponun yöneticileri tarafından yazılır ve sürdürülür, bu nedenle düzeltmenin oraya yapılması gerekir.';
 
   @override
   String get error_reports_already_reported => 'Zaten bildirildi';
@@ -3178,7 +3178,7 @@ class AppLocalizationsTr extends AppLocalizations {
       'Paylaşım kullanılamıyor, panoya kopyalandı.';
 
   @override
-  String get onboarding_title => 'flower power\'ye Hoş Geldiniz';
+  String get onboarding_title => 'FlowerPower\'ye Hoş Geldiniz';
 
   @override
   String get onboarding_libraries_body =>

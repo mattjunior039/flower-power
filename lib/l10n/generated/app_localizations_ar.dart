@@ -2411,10 +2411,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get tracked => 'تتبع';
 
   @override
-  String get auth_unlock_msg => 'المصادقة لفتح قفل flower power';
+  String get auth_unlock_msg => 'المصادقة لفتح قفل FlowerPower';
 
   @override
-  String get app_locked => 'flower power مقفول';
+  String get app_locked => 'FlowerPower مقفول';
 
   @override
   String get auth_to_continue => 'المصادقة للمتابعة';
@@ -2888,7 +2888,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get something_went_wrong => 'حدث خطأ ما';
 
   @override
-  String get startup_failed => 'تعذر على flower power إكمال بدء التشغيل';
+  String get startup_failed => 'تعذر على FlowerPower إكمال بدء التشغيل';
 
   @override
   String sources_with_no_results(int count) {
@@ -3136,7 +3136,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get error_reports_report => 'إبلاغ على GitHub';
 
   @override
-  String get error_reports_banner => 'واجه flower power خطأ';
+  String get error_reports_banner => 'واجه FlowerPower خطأ';
 
   @override
   String get error_reports_banner_action => 'عرض';
@@ -3152,7 +3152,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get error_reports_extension_failure =>
-      'هذا الخطأ ناتج عن إضافة وليس من تطبيق flower power. تتم كتابة الإضافات وصيانتها بواسطة مسؤولي المستودع الذي قمت بتثبيت هذا المصدر منه، لذا يجب إصلاحه هناك. اسم المصدر وما كنت تفتحه هي تفاصيل مفيدة لتقديمها لهم.';
+      'هذا الخطأ ناتج عن إضافة وليس من تطبيق FlowerPower. تتم كتابة الإضافات وصيانتها بواسطة مسؤولي المستودع الذي قمت بتثبيت هذا المصدر منه، لذا يجب إصلاحه هناك. اسم المصدر وما كنت تفتحه هي تفاصيل مفيدة لتقديمها لهم.';
 
   @override
   String get error_reports_already_reported => 'تم الإبلاغ مسبقاً';
@@ -3166,7 +3166,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'المشاركة غير متاحة، تم النسخ إلى الحافظة.';
 
   @override
-  String get onboarding_title => 'مرحباً بك في flower power';
+  String get onboarding_title => 'مرحباً بك في FlowerPower';
 
   @override
   String get onboarding_libraries_body => 'اختر ما تقرأه وتشاهده.';

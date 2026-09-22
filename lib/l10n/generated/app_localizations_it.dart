@@ -2433,10 +2433,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get tracked => 'Monitorato';
 
   @override
-  String get auth_unlock_msg => 'Autenticati per sbloccare flower power';
+  String get auth_unlock_msg => 'Autenticati per sbloccare FlowerPower';
 
   @override
-  String get app_locked => 'flower power è bloccato';
+  String get app_locked => 'FlowerPower è bloccato';
 
   @override
   String get auth_to_continue => 'Autenticati per continuare';
@@ -2921,7 +2921,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get something_went_wrong => 'Qualcosa è andato storto';
 
   @override
-  String get startup_failed => 'flower power non è riuscito ad avviarsi';
+  String get startup_failed => 'FlowerPower non è riuscito ad avviarsi';
 
   @override
   String sources_with_no_results(int count) {
@@ -3172,7 +3172,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get error_reports_report => 'Segnala su GitHub';
 
   @override
-  String get error_reports_banner => 'flower power ha riscontrato un errore';
+  String get error_reports_banner => 'FlowerPower ha riscontrato un errore';
 
   @override
   String get error_reports_banner_action => 'Mostra';
@@ -3188,7 +3188,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get error_reports_extension_failure =>
-      'Questo errore proviene da un\'estensione, non da flower power. Le estensioni sono sviluppate e mantenute da chi gestisce il repository da cui hai installato questa fonte, quindi la correzione deve essere fatta lì. Il nome della fonte e ciò che stavi aprendo sono dettagli utili da fornire.';
+      'Questo errore proviene da un\'estensione, non da FlowerPower. Le estensioni sono sviluppate e mantenute da chi gestisce il repository da cui hai installato questa fonte, quindi la correzione deve essere fatta lì. Il nome della fonte e ciò che stavi aprendo sono dettagli utili da fornire.';
 
   @override
   String get error_reports_already_reported => 'Già segnalato';
@@ -3202,7 +3202,7 @@ class AppLocalizationsIt extends AppLocalizations {
       'Condivisione non disponibile, copiato negli appunti.';
 
   @override
-  String get onboarding_title => 'Benvenuto in flower power';
+  String get onboarding_title => 'Benvenuto in FlowerPower';
 
   @override
   String get onboarding_libraries_body => 'Scegli cosa leggere e guardare.';

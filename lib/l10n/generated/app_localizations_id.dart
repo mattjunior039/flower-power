@@ -2411,10 +2411,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get tracked => 'Dilacak';
 
   @override
-  String get auth_unlock_msg => 'Autentikasi untuk membuka kunci flower power';
+  String get auth_unlock_msg => 'Autentikasi untuk membuka kunci FlowerPower';
 
   @override
-  String get app_locked => 'flower power terkunci';
+  String get app_locked => 'FlowerPower terkunci';
 
   @override
   String get auth_to_continue => 'Autentikasi untuk melanjutkan';
@@ -2894,7 +2894,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get something_went_wrong => 'Terjadi kesalahan';
 
   @override
-  String get startup_failed => 'flower power gagal menyelesaikan peluncuran';
+  String get startup_failed => 'FlowerPower gagal menyelesaikan peluncuran';
 
   @override
   String sources_with_no_results(int count) {
@@ -3144,7 +3144,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get error_reports_report => 'Laporkan di GitHub';
 
   @override
-  String get error_reports_banner => 'flower power mengalami kesalahan';
+  String get error_reports_banner => 'FlowerPower mengalami kesalahan';
 
   @override
   String get error_reports_banner_action => 'Lihat';
@@ -3160,7 +3160,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get error_reports_extension_failure =>
-      'Ini berasal dari ekstensi, bukan dari flower power. Ekstensi ditulis dan dikelola oleh pengelola repositori tempat Anda memasang sumber ini, jadi perbaikan harus dilakukan di sana. Nama sumber dan apa yang Anda buka adalah informasi yang berguna untuk diberikan.';
+      'Ini berasal dari ekstensi, bukan dari FlowerPower. Ekstensi ditulis dan dikelola oleh pengelola repositori tempat Anda memasang sumber ini, jadi perbaikan harus dilakukan di sana. Nama sumber dan apa yang Anda buka adalah informasi yang berguna untuk diberikan.';
 
   @override
   String get error_reports_already_reported => 'Sudah dilaporkan';
@@ -3174,7 +3174,7 @@ class AppLocalizationsId extends AppLocalizations {
       'Berbagi tidak tersedia, disalin ke papan klip.';
 
   @override
-  String get onboarding_title => 'Selamat datang di flower power';
+  String get onboarding_title => 'Selamat datang di FlowerPower';
 
   @override
   String get onboarding_libraries_body =>

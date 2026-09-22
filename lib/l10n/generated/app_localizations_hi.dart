@@ -2889,7 +2889,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get something_went_wrong => 'कुछ गलत हो गया';
 
   @override
-  String get startup_failed => 'flower power प्रारंभ नहीं हो सका';
+  String get startup_failed => 'FlowerPower प्रारंभ नहीं हो सका';
 
   @override
   String sources_with_no_results(int count) {
@@ -3138,7 +3138,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get error_reports_report => 'GitHub पर रिपोर्ट करें';
 
   @override
-  String get error_reports_banner => 'flower power में त्रुटि आई';
+  String get error_reports_banner => 'FlowerPower में त्रुटि आई';
 
   @override
   String get error_reports_banner_action => 'देखें';
@@ -3154,7 +3154,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get error_reports_extension_failure =>
-      'यह त्रुटि किसी एक्सटेंशन से आई है, flower power से नहीं। एक्सटेंशन उस रिपॉजिटरी के प्रबंधकों द्वारा लिखे और बनाए रखे जाते हैं जहाँ से आपने यह स्रोत स्थापित किया है, इसलिए सुधार वहीं होना चाहिए।';
+      'यह त्रुटि किसी एक्सटेंशन से आई है, FlowerPower से नहीं। एक्सटेंशन उस रिपॉजिटरी के प्रबंधकों द्वारा लिखे और बनाए रखे जाते हैं जहाँ से आपने यह स्रोत स्थापित किया है, इसलिए सुधार वहीं होना चाहिए।';
 
   @override
   String get error_reports_already_reported =>
@@ -3169,7 +3169,7 @@ class AppLocalizationsHi extends AppLocalizations {
       'साझाकरण उपलब्ध नहीं है, क्लिपबोर्ड पर कॉपी किया गया।';
 
   @override
-  String get onboarding_title => 'flower power में आपका स्वागत है';
+  String get onboarding_title => 'FlowerPower में आपका स्वागत है';
 
   @override
   String get onboarding_libraries_body =>

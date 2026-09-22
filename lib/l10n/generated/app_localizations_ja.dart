@@ -2355,10 +2355,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get tracked => '追跡中';
 
   @override
-  String get auth_unlock_msg => 'flower powerのロックを解除するために認証してください';
+  String get auth_unlock_msg => 'FlowerPowerのロックを解除するために認証してください';
 
   @override
-  String get app_locked => 'flower powerはロックされています';
+  String get app_locked => 'FlowerPowerはロックされています';
 
   @override
   String get auth_to_continue => '続行するために認証してください';
@@ -2832,7 +2832,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get something_went_wrong => '問題が発生しました';
 
   @override
-  String get startup_failed => 'flower powerの起動に失敗しました';
+  String get startup_failed => 'FlowerPowerの起動に失敗しました';
 
   @override
   String sources_with_no_results(int count) {
@@ -3083,7 +3083,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get error_reports_extension_failure =>
-      'これはflower powerではなく拡張機能に起因するエラーです。拡張機能はインストール元のリポジトリ管理者によって作成・管理されているため、そちらで修正する必要があります。ソース名と開こうとした項目を伝えると役立ちます。';
+      'これはFlowerPowerではなく拡張機能に起因するエラーです。拡張機能はインストール元のリポジトリ管理者によって作成・管理されているため、そちらで修正する必要があります。ソース名と開こうとした項目を伝えると役立ちます。';
 
   @override
   String get error_reports_already_reported => '報告済み';
@@ -3096,7 +3096,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get share_unavailable_copied => '共有機能が利用できないためクリップボードにコピーしました。';
 
   @override
-  String get onboarding_title => 'flower powerへようこそ';
+  String get onboarding_title => 'FlowerPowerへようこそ';
 
   @override
   String get onboarding_libraries_body => '読みたいもの、観たいものを選択してください。';

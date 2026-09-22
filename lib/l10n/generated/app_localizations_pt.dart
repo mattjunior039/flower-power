@@ -2429,10 +2429,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String get tracked => 'Rastreado';
 
   @override
-  String get auth_unlock_msg => 'Autentique-se para desbloquear flower power';
+  String get auth_unlock_msg => 'Autentique-se para desbloquear FlowerPower';
 
   @override
-  String get app_locked => 'flower power está bloqueado';
+  String get app_locked => 'FlowerPower está bloqueado';
 
   @override
   String get auth_to_continue => 'Autentique-se para continuar';
@@ -2916,7 +2916,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get startup_failed =>
-      'flower power não conseguiu concluir a inicialização';
+      'FlowerPower não conseguiu concluir a inicialização';
 
   @override
   String sources_with_no_results(int count) {
@@ -3167,7 +3167,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get error_reports_report => 'Reportar no GitHub';
 
   @override
-  String get error_reports_banner => 'flower power encontrou um erro';
+  String get error_reports_banner => 'FlowerPower encontrou um erro';
 
   @override
   String get error_reports_banner_action => 'Ver';
@@ -3183,7 +3183,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get error_reports_extension_failure =>
-      'Isto veio de uma extensão, não do flower power. As extensões são escritas e mantidas por quem gere o repositório a partir do qual instalou esta fonte, pelo que a correção tem de ser feita lá. O nome da fonte e o que estava a abrir são detalhes úteis para lhes fornecer.';
+      'Isto veio de uma extensão, não do FlowerPower. As extensões são escritas e mantidas por quem gere o repositório a partir do qual instalou esta fonte, pelo que a correção tem de ser feita lá. O nome da fonte e o que estava a abrir são detalhes úteis para lhes fornecer.';
 
   @override
   String get error_reports_already_reported => 'Já reportado';
@@ -3197,7 +3197,7 @@ class AppLocalizationsPt extends AppLocalizations {
       'Partilha indisponível, copiado para a área de transferência.';
 
   @override
-  String get onboarding_title => 'Bem-vindo ao flower power';
+  String get onboarding_title => 'Bem-vindo ao FlowerPower';
 
   @override
   String get onboarding_libraries_body =>
@@ -5885,10 +5885,10 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get tracked => 'Rastreado';
 
   @override
-  String get auth_unlock_msg => 'Autentique-se para desbloquear flower power';
+  String get auth_unlock_msg => 'Autentique-se para desbloquear FlowerPower';
 
   @override
-  String get app_locked => 'flower power está bloqueado';
+  String get app_locked => 'FlowerPower está bloqueado';
 
   @override
   String get auth_to_continue => 'Autentique-se para continuar';
@@ -6369,7 +6369,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get startup_failed =>
-      'flower power não conseguiu concluir a inicialização';
+      'FlowerPower não conseguiu concluir a inicialização';
 
   @override
   String sources_with_no_results(int count) {
@@ -6620,7 +6620,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get error_reports_report => 'Reportar no GitHub';
 
   @override
-  String get error_reports_banner => 'flower power encontrou um erro';
+  String get error_reports_banner => 'FlowerPower encontrou um erro';
 
   @override
   String get error_reports_banner_action => 'Ver';
@@ -6636,7 +6636,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get error_reports_extension_failure =>
-      'Isto veio de uma extensão, não do flower power. As extensões são escritas e mantidas por quem gerencia o repositório de onde você instalou esta fonte, portanto a correção deve ser feita lá. O nome da fonte e o que você estava abrindo são detalhes úteis para enviar a eles.';
+      'Isto veio de uma extensão, não do FlowerPower. As extensões são escritas e mantidas por quem gerencia o repositório de onde você instalou esta fonte, portanto a correção deve ser feita lá. O nome da fonte e o que você estava abrindo são detalhes úteis para enviar a eles.';
 
   @override
   String get error_reports_already_reported => 'Já reportado';
@@ -6650,7 +6650,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       'Partilha indisponível, copiado para a área de transferência.';
 
   @override
-  String get onboarding_title => 'Bem-vindo ao flower power';
+  String get onboarding_title => 'Bem-vindo ao FlowerPower';
 
   @override
   String get onboarding_libraries_body =>

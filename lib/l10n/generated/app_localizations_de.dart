@@ -2427,10 +2427,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get auth_unlock_msg =>
-      'Authentifizieren Sie sich, um flower power freizuschalten';
+      'Authentifizieren Sie sich, um FlowerPower freizuschalten';
 
   @override
-  String get app_locked => 'flower power ist gesperrt';
+  String get app_locked => 'FlowerPower ist gesperrt';
 
   @override
   String get auth_to_continue => 'Authentifizieren Sie sich, um fortzufahren';
@@ -2911,7 +2911,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get something_went_wrong => 'Etwas ist schiefgelaufen';
 
   @override
-  String get startup_failed => 'flower power konnte nicht gestartet werden';
+  String get startup_failed => 'FlowerPower konnte nicht gestartet werden';
 
   @override
   String sources_with_no_results(int count) {
@@ -3163,7 +3163,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get error_reports_banner =>
-      'flower power hat einen Fehler festgestellt';
+      'FlowerPower hat einen Fehler festgestellt';
 
   @override
   String get error_reports_banner_action => 'Anzeigen';
@@ -3179,7 +3179,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get error_reports_extension_failure =>
-      'Dies wurde durch eine Erweiterung verursacht, nicht durch flower power. Erweiterungen werden von den Betreibern des Repositories gewartet, aus dem diese Quelle installiert wurde. Der Quellenname und die geöffnete Seite sind hilfreiche Details für einen Fehlerbericht.';
+      'Dies wurde durch eine Erweiterung verursacht, nicht durch FlowerPower. Erweiterungen werden von den Betreibern des Repositories gewartet, aus dem diese Quelle installiert wurde. Der Quellenname und die geöffnete Seite sind hilfreiche Details für einen Fehlerbericht.';
 
   @override
   String get error_reports_already_reported => 'Bereits gemeldet';
@@ -3193,7 +3193,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Teilen nicht verfügbar, in Zwischenablage kopiert.';
 
   @override
-  String get onboarding_title => 'Willkommen bei flower power';
+  String get onboarding_title => 'Willkommen bei FlowerPower';
 
   @override
   String get onboarding_libraries_body =>

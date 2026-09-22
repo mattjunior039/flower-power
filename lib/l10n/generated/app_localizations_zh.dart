@@ -2329,10 +2329,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tracked => '已追踪';
 
   @override
-  String get auth_unlock_msg => '验证以解锁flower power';
+  String get auth_unlock_msg => '验证以解锁FlowerPower';
 
   @override
-  String get app_locked => 'flower power已锁定';
+  String get app_locked => 'FlowerPower已锁定';
 
   @override
   String get auth_to_continue => '验证以继续';
@@ -2789,7 +2789,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get something_went_wrong => '出错了';
 
   @override
-  String get startup_failed => 'flower power 无法完成启动';
+  String get startup_failed => 'FlowerPower 无法完成启动';
 
   @override
   String sources_with_no_results(int count) {
@@ -3023,7 +3023,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get error_reports_report => '在 GitHub 上反馈';
 
   @override
-  String get error_reports_banner => 'flower power 遇到了一个错误';
+  String get error_reports_banner => 'FlowerPower 遇到了一个错误';
 
   @override
   String get error_reports_banner_action => '查看';
@@ -3039,7 +3039,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get error_reports_extension_failure =>
-      '此错误来自扩展插件，而非 flower power 本身。扩展由插件仓库的维护者编写和维护，因此需要在插件仓库中修复。请向他们提供插件名称和当时正在打开的内容。';
+      '此错误来自扩展插件，而非 FlowerPower 本身。扩展由插件仓库的维护者编写和维护，因此需要在插件仓库中修复。请向他们提供插件名称和当时正在打开的内容。';
 
   @override
   String get error_reports_already_reported => '已报告';
@@ -3052,7 +3052,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get share_unavailable_copied => '此平台不支持分享，已复制到剪贴板。';
 
   @override
-  String get onboarding_title => '欢迎使用 flower power';
+  String get onboarding_title => '欢迎使用 FlowerPower';
 
   @override
   String get onboarding_libraries_body => '选择您要阅读和观看的内容类型。';

@@ -2397,10 +2397,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tracked => 'Tracked';
 
   @override
-  String get auth_unlock_msg => 'Authenticate to unlock flower power';
+  String get auth_unlock_msg => 'Authenticate to unlock FlowerPower';
 
   @override
-  String get app_locked => 'flower power is locked';
+  String get app_locked => 'FlowerPower is locked';
 
   @override
   String get auth_to_continue => 'Authenticate to continue';
@@ -2879,7 +2879,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get something_went_wrong => 'Something went wrong';
 
   @override
-  String get startup_failed => 'flower power could not finish starting up';
+  String get startup_failed => 'FlowerPower could not finish starting up';
 
   @override
   String sources_with_no_results(int count) {
@@ -3129,7 +3129,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get error_reports_report => 'Report on GitHub';
 
   @override
-  String get error_reports_banner => 'flower power ran into an error';
+  String get error_reports_banner => 'FlowerPower ran into an error';
 
   @override
   String get error_reports_banner_action => 'See it';
@@ -3145,7 +3145,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get error_reports_extension_failure =>
-      'This came from an extension, not from flower power. Extensions are written and maintained by whoever runs the repository you installed this source from, so a fix has to go there. The source name and what you were opening are the useful details to give them.';
+      'This came from an extension, not from FlowerPower. Extensions are written and maintained by whoever runs the repository you installed this source from, so a fix has to go there. The source name and what you were opening are the useful details to give them.';
 
   @override
   String get error_reports_already_reported => 'Already reported';
@@ -3159,7 +3159,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sharing isn\'t available on this platform, so it was copied to the clipboard instead.';
 
   @override
-  String get onboarding_title => 'Welcome to flower power';
+  String get onboarding_title => 'Welcome to Flower Power';
 
   @override
   String get onboarding_libraries_body =>
@@ -3230,7 +3230,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboarding_body =>
-      'flower power comes with no sources of its own. Add a repository and the extensions it holds become available to install and browse.';
+      'FlowerPower comes with no sources of its own. Add a repository and the extensions it holds become available to install and browse.';
 
   @override
   String get onboarding_add => 'Add repository';

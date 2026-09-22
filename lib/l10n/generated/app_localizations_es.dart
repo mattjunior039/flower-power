@@ -2435,10 +2435,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get tracked => 'Rastreado';
 
   @override
-  String get auth_unlock_msg => 'Autentifícate para desbloquear flower power';
+  String get auth_unlock_msg => 'Autentifícate para desbloquear FlowerPower';
 
   @override
-  String get app_locked => 'flower power está bloqueado';
+  String get app_locked => 'FlowerPower está bloqueado';
 
   @override
   String get auth_to_continue => 'Autentifícate para continuar';
@@ -2921,7 +2921,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get something_went_wrong => 'Algo salió mal';
 
   @override
-  String get startup_failed => 'flower power no pudo completar el inicio';
+  String get startup_failed => 'FlowerPower no pudo completar el inicio';
 
   @override
   String sources_with_no_results(int count) {
@@ -3175,7 +3175,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get error_reports_report => 'Informar en GitHub';
 
   @override
-  String get error_reports_banner => 'flower power encontró un error';
+  String get error_reports_banner => 'FlowerPower encontró un error';
 
   @override
   String get error_reports_banner_action => 'Ver';
@@ -3191,7 +3191,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get error_reports_extension_failure =>
-      'Esto proviene de una extensión, no de flower power. Las extensiones son desarrolladas y mantenidas por quienes administran el repositorio desde el que instaló esta fuente, por lo que la solución debe realizarse allí. El nombre de la fuente y lo que estaba abriendo son detalles útiles para proporcionarles.';
+      'Esto proviene de una extensión, no de FlowerPower. Las extensiones son desarrolladas y mantenidas por quienes administran el repositorio desde el que instaló esta fuente, por lo que la solución debe realizarse allí. El nombre de la fuente y lo que estaba abriendo son detalles útiles para proporcionarles.';
 
   @override
   String get error_reports_already_reported => 'Ya reportado';
@@ -3205,7 +3205,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'La función de compartir no está disponible en esta plataforma, por lo que se copió al portapapeles.';
 
   @override
-  String get onboarding_title => 'Bienvenido a flower power';
+  String get onboarding_title => 'Bienvenido a FlowerPower';
 
   @override
   String get onboarding_libraries_body =>
@@ -3277,7 +3277,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get onboarding_body =>
-      'flower power no incluye fuentes propias. Añade un repositorio para que sus extensiones estén disponibles para instalar y explorar.';
+      'FlowerPower no incluye fuentes propias. Añade un repositorio para que sus extensiones estén disponibles para instalar y explorar.';
 
   @override
   String get onboarding_add => 'Añadir repositorio';
@@ -5899,10 +5899,10 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
   String get tracked => 'Rastreado';
 
   @override
-  String get auth_unlock_msg => 'Autentifícate para desbloquear flower power';
+  String get auth_unlock_msg => 'Autentifícate para desbloquear FlowerPower';
 
   @override
-  String get app_locked => 'flower power está bloqueado';
+  String get app_locked => 'FlowerPower está bloqueado';
 
   @override
   String get auth_to_continue => 'Autentifícate para continuar';
@@ -6381,7 +6381,7 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
   String get something_went_wrong => 'Algo salió mal';
 
   @override
-  String get startup_failed => 'flower power no pudo completar el inicio';
+  String get startup_failed => 'FlowerPower no pudo completar el inicio';
 
   @override
   String sources_with_no_results(int count) {
@@ -6635,7 +6635,7 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
   String get error_reports_report => 'Informar en GitHub';
 
   @override
-  String get error_reports_banner => 'flower power encontró un error';
+  String get error_reports_banner => 'FlowerPower encontró un error';
 
   @override
   String get error_reports_banner_action => 'Ver';
@@ -6651,7 +6651,7 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
 
   @override
   String get error_reports_extension_failure =>
-      'Esto proviene de una extensión, no de flower power. Las extensiones son desarrolladas y mantenidas por quienes administran el repositorio desde el que instaló esta fuente, por lo que la solución debe realizarse allí. El nombre de la fuente y lo que estaba abriendo son detalles útiles para proporcionarles.';
+      'Esto proviene de una extensión, no de FlowerPower. Las extensiones son desarrolladas y mantenidas por quienes administran el repositorio desde el que instaló esta fuente, por lo que la solución debe realizarse allí. El nombre de la fuente y lo que estaba abriendo son detalles útiles para proporcionarles.';
 
   @override
   String get error_reports_already_reported => 'Ya reportado';
@@ -6665,7 +6665,7 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
       'La función de compartir no está disponible en esta plataforma, por lo que se copió al portapapeles.';
 
   @override
-  String get onboarding_title => 'Bienvenido a flower power';
+  String get onboarding_title => 'Bienvenido a FlowerPower';
 
   @override
   String get onboarding_libraries_body =>
@@ -6737,7 +6737,7 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
 
   @override
   String get onboarding_body =>
-      'flower power no incluye fuentes propias. Añade un repositorio para que sus extensiones estén disponibles para instalar y explorar.';
+      'FlowerPower no incluye fuentes propias. Añade un repositorio para que sus extensiones estén disponibles para instalar y explorar.';
 
   @override
   String get onboarding_add => 'Añadir repositorio';

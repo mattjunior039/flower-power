@@ -4396,13 +4396,13 @@ abstract class AppLocalizations {
   /// No description provided for @auth_unlock_msg.
   ///
   /// In en, this message translates to:
-  /// **'Authenticate to unlock flower power'**
+  /// **'Authenticate to unlock FlowerPower'**
   String get auth_unlock_msg;
 
   /// No description provided for @app_locked.
   ///
   /// In en, this message translates to:
-  /// **'flower power is locked'**
+  /// **'FlowerPower is locked'**
   String get app_locked;
 
   /// No description provided for @auth_to_continue.
@@ -5278,7 +5278,7 @@ abstract class AppLocalizations {
   /// No description provided for @startup_failed.
   ///
   /// In en, this message translates to:
-  /// **'flower power could not finish starting up'**
+  /// **'FlowerPower could not finish starting up'**
   String get startup_failed;
 
   /// Header of the collapsed group in global search holding every source that failed or found nothing.
@@ -5656,7 +5656,7 @@ abstract class AppLocalizations {
   /// No description provided for @error_reports_banner.
   ///
   /// In en, this message translates to:
-  /// **'flower power ran into an error'**
+  /// **'FlowerPower ran into an error'**
   String get error_reports_banner;
 
   /// No description provided for @error_reports_banner_action.
@@ -5686,7 +5686,7 @@ abstract class AppLocalizations {
   /// No description provided for @error_reports_extension_failure.
   ///
   /// In en, this message translates to:
-  /// **'This came from an extension, not from flower power. Extensions are written and maintained by whoever runs the repository you installed this source from, so a fix has to go there. The source name and what you were opening are the useful details to give them.'**
+  /// **'This came from an extension, not from FlowerPower. Extensions are written and maintained by whoever runs the repository you installed this source from, so a fix has to go there. The source name and what you were opening are the useful details to give them.'**
   String get error_reports_extension_failure;
 
   /// No description provided for @error_reports_already_reported.
@@ -5710,7 +5710,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding_title.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to flower power'**
+  /// **'Welcome to Flower Power'**
   String get onboarding_title;
 
   /// No description provided for @onboarding_libraries_body.
@@ -5830,7 +5830,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding_body.
   ///
   /// In en, this message translates to:
-  /// **'flower power comes with no sources of its own. Add a repository and the extensions it holds become available to install and browse.'**
+  /// **'FlowerPower comes with no sources of its own. Add a repository and the extensions it holds become available to install and browse.'**
   String get onboarding_body;
 
   /// No description provided for @onboarding_add.

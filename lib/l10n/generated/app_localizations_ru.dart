@@ -2443,10 +2443,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get auth_unlock_msg =>
-      'Аутентифицируйтесь, чтобы разблокировать flower power';
+      'Аутентифицируйтесь, чтобы разблокировать FlowerPower';
 
   @override
-  String get app_locked => 'flower power заблокирован';
+  String get app_locked => 'FlowerPower заблокирован';
 
   @override
   String get auth_to_continue => 'Аутентифицируйтесь, чтобы продолжить';
@@ -2928,7 +2928,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get something_went_wrong => 'Что-то пошло не так';
 
   @override
-  String get startup_failed => 'flower power не удалось завершить запуск';
+  String get startup_failed => 'FlowerPower не удалось завершить запуск';
 
   @override
   String sources_with_no_results(int count) {
@@ -3181,7 +3181,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get error_reports_report => 'Сообщить на GitHub';
 
   @override
-  String get error_reports_banner => 'flower power столкнулся с ошибкой';
+  String get error_reports_banner => 'FlowerPower столкнулся с ошибкой';
 
   @override
   String get error_reports_banner_action => 'Посмотреть';
@@ -3197,7 +3197,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get error_reports_extension_failure =>
-      'Эта ошибка вызвана расширением, а не flower power. Расширения разрабатываются и поддерживаются владельцами репозитория, из которого был установлен источник. Название источника и открываемый контент помогут им исправить проблему.';
+      'Эта ошибка вызвана расширением, а не FlowerPower. Расширения разрабатываются и поддерживаются владельцами репозитория, из которого был установлен источник. Название источника и открываемый контент помогут им исправить проблему.';
 
   @override
   String get error_reports_already_reported => 'Уже отправлено';
@@ -3211,7 +3211,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Отправка недоступна, скопировано в буфер обмена.';
 
   @override
-  String get onboarding_title => 'Добро пожаловать в flower power';
+  String get onboarding_title => 'Добро пожаловать в FlowerPower';
 
   @override
   String get onboarding_libraries_body =>

@@ -563,9 +563,6 @@ class _OnboardingScreenState extends ConsumerState<_OnboardingBody>
               Image.asset(
                 appIconAssets[2],
                 height: isTv ? 96 : 80,
-                color: theme.brightness == Brightness.light
-                    ? Colors.black
-                    : Colors.white,
                 fit: BoxFit.contain,
               ),
               const SizedBox(height: 16),

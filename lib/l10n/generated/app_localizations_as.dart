@@ -2406,10 +2406,10 @@ class AppLocalizationsAs extends AppLocalizations {
   String get tracked => 'ট্র্যাক কৰা';
 
   @override
-  String get auth_unlock_msg => 'flower power আনলক কৰিবলৈ প্রমাণ কৰক';
+  String get auth_unlock_msg => 'FlowerPower আনলক কৰিবলৈ প্রমাণ কৰক';
 
   @override
-  String get app_locked => 'flower power লক কৰা আছে';
+  String get app_locked => 'FlowerPower লক কৰা আছে';
 
   @override
   String get auth_to_continue => 'অব্যাহত ৰাখিবলৈ প্রমাণ কৰক';
@@ -2889,7 +2889,7 @@ class AppLocalizationsAs extends AppLocalizations {
   String get something_went_wrong => 'কিবা ভুল হ\'ল';
 
   @override
-  String get startup_failed => 'flower power আৰম্ভ হ\'ব নোৱাৰিলে';
+  String get startup_failed => 'FlowerPower আৰম্ভ হ\'ব নোৱাৰিলে';
 
   @override
   String sources_with_no_results(int count) {
@@ -3137,7 +3137,7 @@ class AppLocalizationsAs extends AppLocalizations {
   String get error_reports_report => 'GitHub ত ৰিপ\'ৰ্ট কৰক';
 
   @override
-  String get error_reports_banner => 'flower power ত এটা ত্ৰুটি হ\'ল';
+  String get error_reports_banner => 'FlowerPower ত এটা ত্ৰুটি হ\'ল';
 
   @override
   String get error_reports_banner_action => 'চাওক';
@@ -3153,7 +3153,7 @@ class AppLocalizationsAs extends AppLocalizations {
 
   @override
   String get error_reports_extension_failure =>
-      'এইটো এটা এক্সটেনশনৰ পৰা আহিছে, flower power-ৰ পৰা নহয়। যিটো ৰেপজিটৰিৰ পৰা আপুনি এই উৎস ইনষ্টল কৰিছিল সেই ৰেপজিটৰিৰ পৰিচালকসকলে ইয়াক পৰিচালনা কৰে, সেয়েহে সমাধান তাতেই হ\'ব লাগিব।';
+      'এইটো এটা এক্সটেনশনৰ পৰা আহিছে, FlowerPower-ৰ পৰা নহয়। যিটো ৰেপজিটৰিৰ পৰা আপুনি এই উৎস ইনষ্টল কৰিছিল সেই ৰেপজিটৰিৰ পৰিচালকসকলে ইয়াক পৰিচালনা কৰে, সেয়েহে সমাধান তাতেই হ\'ব লাগিব।';
 
   @override
   String get error_reports_already_reported => 'ইতিমধ্যে ৰিপৰ্ট কৰা হৈছে';
@@ -3167,7 +3167,7 @@ class AppLocalizationsAs extends AppLocalizations {
       'শ্বেয়াৰ উপলব্ধ নহয়, ক্লিপব\'ৰ্ডলৈ কপি কৰা হ\'ল।';
 
   @override
-  String get onboarding_title => 'flower power লৈ স্বাগতম';
+  String get onboarding_title => 'FlowerPower লৈ স্বাগতম';
 
   @override
   String get onboarding_libraries_body => 'আপুনি কি পঢ়িব আৰু চাব বিচাৰে বাছক।';

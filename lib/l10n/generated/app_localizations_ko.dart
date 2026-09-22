@@ -2352,10 +2352,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get tracked => '트래킹됨';
 
   @override
-  String get auth_unlock_msg => 'flower power 잠금을 해제하려면 인증하세요';
+  String get auth_unlock_msg => 'FlowerPower 잠금을 해제하려면 인증하세요';
 
   @override
-  String get app_locked => 'flower power가 잠겨있습니다';
+  String get app_locked => 'FlowerPower가 잠겨있습니다';
 
   @override
   String get auth_to_continue => '계속하려면 인증하세요';
@@ -2822,7 +2822,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get something_went_wrong => '문제가 발생했습니다';
 
   @override
-  String get startup_failed => 'flower power를 시작할 수 없습니다';
+  String get startup_failed => 'FlowerPower를 시작할 수 없습니다';
 
   @override
   String sources_with_no_results(int count) {
@@ -3068,7 +3068,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get error_reports_report => 'GitHub에 보고하기';
 
   @override
-  String get error_reports_banner => 'flower power에서 오류가 발생했습니다';
+  String get error_reports_banner => 'FlowerPower에서 오류가 발생했습니다';
 
   @override
   String get error_reports_banner_action => '확인';
@@ -3084,7 +3084,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get error_reports_extension_failure =>
-      '이 오류는 flower power 앱이 아닌 확장 프로그램에서 발생했습니다. 확장 프로그램은 설치한 저장소의 관리자가 유지보수하므로 해당 저장소에 수정 요청을 해야 합니다. 소스 이름과 열려던 항목에 대한 세부 정보를 제공하면 유용합니다.';
+      '이 오류는 FlowerPower 앱이 아닌 확장 프로그램에서 발생했습니다. 확장 프로그램은 설치한 저장소의 관리자가 유지보수하므로 해당 저장소에 수정 요청을 해야 합니다. 소스 이름과 열려던 항목에 대한 세부 정보를 제공하면 유용합니다.';
 
   @override
   String get error_reports_already_reported => '이미 보고됨';
@@ -3098,7 +3098,7 @@ class AppLocalizationsKo extends AppLocalizations {
       '이 플랫폼에서는 공유 기능을 사용할 수 없어 클립보드에 복사되었습니다.';
 
   @override
-  String get onboarding_title => 'flower power에 오신 것을 환영합니다';
+  String get onboarding_title => 'FlowerPower에 오신 것을 환영합니다';
 
   @override
   String get onboarding_libraries_body =>
@@ -3168,7 +3168,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get onboarding_body =>
-      'flower power에는 기본 소스가 포함되어 있지 않습니다. 저장소를 추가하면 확장 프로그램을 설치하여 탐색할 수 있습니다.';
+      'FlowerPower에는 기본 소스가 포함되어 있지 않습니다. 저장소를 추가하면 확장 프로그램을 설치하여 탐색할 수 있습니다.';
 
   @override
   String get onboarding_add => '저장소 추가';

@@ -2399,10 +2399,10 @@ class AppLocalizationsTh extends AppLocalizations {
   String get tracked => 'ติดตามแล้ว';
 
   @override
-  String get auth_unlock_msg => 'ยืนยันตัวตนเพื่อปลดล็อก flower power';
+  String get auth_unlock_msg => 'ยืนยันตัวตนเพื่อปลดล็อก FlowerPower';
 
   @override
-  String get app_locked => 'flower power ถูกล็อก';
+  String get app_locked => 'FlowerPower ถูกล็อก';
 
   @override
   String get auth_to_continue => 'ยืนยันตัวตนเพื่อดำเนินการต่อ';
@@ -2883,7 +2883,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get something_went_wrong => 'เกิดข้อผิดพลาดบางอย่าง';
 
   @override
-  String get startup_failed => 'flower power ไม่สามารถเริ่มต้นทำงานได้';
+  String get startup_failed => 'FlowerPower ไม่สามารถเริ่มต้นทำงานได้';
 
   @override
   String sources_with_no_results(int count) {
@@ -3128,7 +3128,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get error_reports_report => 'รายงานบน GitHub';
 
   @override
-  String get error_reports_banner => 'flower power พบข้อผิดพลาด';
+  String get error_reports_banner => 'FlowerPower พบข้อผิดพลาด';
 
   @override
   String get error_reports_banner_action => 'ดู';
@@ -3144,7 +3144,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get error_reports_extension_failure =>
-      'ข้อผิดพลาดนี้มาจากส่วนขยาย ไม่ใช่จาก flower power ส่วนขยายเขียนและดูแลโดยผู้ดูแลที่เก็บที่คุณติดตั้งแหล่งที่มานี้ การแก้ไขจึงต้องทำที่นั่น';
+      'ข้อผิดพลาดนี้มาจากส่วนขยาย ไม่ใช่จาก FlowerPower ส่วนขยายเขียนและดูแลโดยผู้ดูแลที่เก็บที่คุณติดตั้งแหล่งที่มานี้ การแก้ไขจึงต้องทำที่นั่น';
 
   @override
   String get error_reports_already_reported => 'รายงานแล้ว';
@@ -3158,7 +3158,7 @@ class AppLocalizationsTh extends AppLocalizations {
       'ไม่สามารถแชร์ได้ จึงคัดลอกไปยังคลิปบอร์ดแทน';
 
   @override
-  String get onboarding_title => 'ยินดีต้อนรับสู่ flower power';
+  String get onboarding_title => 'ยินดีต้อนรับสู่ FlowerPower';
 
   @override
   String get onboarding_libraries_body => 'เลือกสิ่งที่คุณต้องการอ่านและดู';

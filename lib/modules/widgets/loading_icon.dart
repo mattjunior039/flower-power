@@ -18,7 +18,6 @@ class LoadingIcon extends StatelessWidget {
       body: Center(
         child: Image.asset(
           appIconAssets[2],
-          color: theme.colorScheme.onSurface,
           fit: BoxFit.cover,
           height: 100,
         ),
