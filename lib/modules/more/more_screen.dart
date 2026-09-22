@@ -10,6 +10,8 @@ import 'package:flower_power/utils/constant.dart';
 import 'package:flower_power/utils/platform_utils.dart';
 import 'package:flower_power/models/manga.dart';
 
+import 'package:flower_power/modules/more/about/providers/get_package_info.dart';
+
 class MoreScreen extends ConsumerStatefulWidget {
   const MoreScreen({super.key});
 
@@ -136,9 +138,24 @@ class MoreScreenState extends ConsumerState<MoreScreen> {
             //   icon: Icons.help_outline,
             //   title: l10n.help,
             // ),
+            const SizedBox(height: 20),
+            ref.watch(getPackageInfoProvider).when(
+                  data: (data) => Padding(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: Text(
+                      'v${data.version}',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Colors.grey,
+                          ),
+                    ),
+                  ),
+                  error: (_, __) => const SizedBox.shrink(),
+                  loading: () => const SizedBox.shrink(),
+                ),
           ],
         ),
       ),
     );
   }
 }
+
