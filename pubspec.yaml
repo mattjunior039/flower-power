@@ -181,14 +181,14 @@ flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
   remove_alpha_ios: true
-  image_path: "assets/app_icons/flower.jpg"
+  image_path: "assets/app_icons/logo_highres.png"
   min_sdk_android: 21
   windows:
     generate: true
-    image_path: "assets/app_icons/flower.jpg"
+    image_path: "assets/app_icons/logo_highres.png"
   macos:
     generate: true
-    image_path: "assets/app_icons/flower.jpg"
+    image_path: "assets/app_icons/logo_highres.png"
 
 inno_bundle:
   id: 6CB26FFA-E72B-42C3-91E8-594940031CA2
