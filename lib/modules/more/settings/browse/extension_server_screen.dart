@@ -832,6 +832,21 @@ class _ExtensionServerScreenState extends ConsumerState<ExtensionServerScreen> {
   ) async {
     await _prepareInstallDirectory(installDir);
     await _extractArchive(bundleZip, installDir);
+
+    // --- ANTIGRAVITY FIX INJECTION ---
+    // Delete the official (broken) JAR
+    final officialJarPath = await findExtensionServerJar(installDir);
+    if (officialJarPath != null) {
+      await File(officialJarPath).delete();
+    }
+    // Copy our patched JAR from assets
+    final fixedJarPath = path.join(installDir.path, 'MExtensionServer-v1.0.7-r1.jar');
+    final byteData = await rootBundle.load('assets/extension_server/MExtensionServer-v1.0.7-r1.jar');
+    final buffer = byteData.buffer;
+    await File(fixedJarPath).writeAsBytes(
+        buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+    // ---------------------------------
+
     final resolvedPaths = await _resolvePathsInDirectory(installDir);
     if (!_hasResolvedPaths(resolvedPaths)) {
       throw Exception(l10n.downloaded_bundle_missing_expected_files);

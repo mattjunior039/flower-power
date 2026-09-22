@@ -168,6 +168,7 @@ flutter:
       platforms: [android]
     - assets/trackers_icons/
     - assets/app_icons/
+    - assets/extension_server/
 
   fonts:
     - family: OpenDyslexic

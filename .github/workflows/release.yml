@@ -56,6 +56,11 @@ jobs:
           echo "${{ secrets.SIGNING_KEY_STORE_BASE64 }}" | base64 -di > android/app/upload-keystore.jks
           echo "${{ secrets.SIGNING_KEY_PROPERTIES }}" > android/key.properties
 
+      - name: Stitch extension server jar
+        shell: bash
+        run: |
+          cat assets/extension_server/MExtensionServer.jar.part.* > assets/extension_server/MExtensionServer-v1.0.7-r1.jar
+
       - name: flutter pub get
         run: flutter pub get
 
@@ -136,6 +141,11 @@ jobs:
         run: |
           echo "${{ secrets.SIGNING_KEY_STORE_BASE64 }}" | base64 -di > android/app/upload-keystore.jks
           echo "${{ secrets.SIGNING_KEY_PROPERTIES }}" > android/key.properties
+
+      - name: Stitch extension server jar
+        shell: bash
+        run: |
+          cat assets/extension_server/MExtensionServer.jar.part.* > assets/extension_server/MExtensionServer-v1.0.7-r1.jar
 
       - name: flutter pub get
         run: flutter pub get
@@ -230,6 +240,11 @@ jobs:
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Stitch extension server jar
+        shell: bash
+        run: |
+          cat assets/extension_server/MExtensionServer.jar.part.* > assets/extension_server/MExtensionServer-v1.0.7-r1.jar
+
       - name: flutter pub get
         run: flutter pub get
 
@@ -263,6 +278,11 @@ jobs:
 
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
+
+      - name: Stitch extension server jar
+        shell: bash
+        run: |
+          cat assets/extension_server/MExtensionServer.jar.part.* > assets/extension_server/MExtensionServer-v1.0.7-r1.jar
 
       - name: flutter pub get
         run: flutter pub get
@@ -321,6 +341,11 @@ jobs:
 
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
+
+      - name: Stitch extension server jar
+        shell: bash
+        run: |
+          cat assets/extension_server/MExtensionServer.jar.part.* > assets/extension_server/MExtensionServer-v1.0.7-r1.jar
 
       - name: flutter pub get
         run: flutter pub get
@@ -456,6 +481,11 @@ jobs:
 
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
+
+      - name: Stitch extension server jar
+        shell: bash
+        run: |
+          cat assets/extension_server/MExtensionServer.jar.part.* > assets/extension_server/MExtensionServer-v1.0.7-r1.jar
 
       - name: flutter pub get
         run: flutter pub get
