@@ -3,174 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flower Power - Download</title>
+    <title>Flower Power | v1.0.3</title>
     <style>
         :root {
-            --primary: #ff6b81;
-            --secondary: #2f3542;
-            --bg: #fdf5f6;
+            --bg: #FDFBFB;
+            --text: #111111;
+            --accent: #FF2E7E; 
+            --border: rgba(17, 17, 17, 0.12);
         }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            color: var(--secondary);
+        
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            overflow-x: hidden;
         }
-        .hero {
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
-            padding: 80px 20px;
-            text-align: center;
-            border-bottom: 5px solid white;
-            position: relative;
-            z-index: 2;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.4;
+            -webkit-font-smoothing: antialiased;
         }
-        h1 {
-            font-size: 4em;
-            margin: 0;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(255,107,129,0.5);
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 4fr 6fr;
+            min-height: 100vh;
         }
-        .subtitle {
-            font-size: 1.5em;
-            color: white;
-            margin-top: 10px;
-            font-weight: 500;
-        }
-        .container {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 20px;
-            text-align: center;
-            position: relative;
-            z-index: 2;
-        }
-        .downloads {
+
+        /* Left column - Sticky Header area */
+        .header-section {
+            padding: 6rem 4rem;
+            border-right: 1px solid var(--border);
             display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 20px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            justify-content: space-between;
         }
+
+        .logo-wrapper {
+            margin-bottom: 4rem;
+        }
+
+        h1 {
+            font-weight: 700;
+            font-size: clamp(3rem, 5vw, 6rem);
+            letter-spacing: -0.04em;
+            line-height: 1;
+            margin-bottom: 2rem;
+        }
+
+        .description {
+            font-weight: 300;
+            font-size: 1.25rem;
+            max-width: 400px;
+            color: #4A4A4A;
+        }
+
+        .version-tag {
+            font-size: 0.85rem; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 0.05em;
+        }
+
+        /* Right column - Content */
+        .content-section {
+            padding: 6rem 4rem;
+        }
+
+        .download-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 6rem;
+        }
+
         .btn {
-            background: var(--primary);
-            color: white;
-            padding: 15px 30px;
+            display: block;
+            padding: 1.5rem 2rem;
+            border: 1px solid var(--border);
+            color: var(--text);
             text-decoration: none;
-            font-size: 1.2em;
-            border-radius: 50px;
-            transition: transform 0.3s, box-shadow 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: bold;
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.2s ease;
         }
+
         .btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(255, 107, 129, 0.4);
+            background-color: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
         }
-        .btn-mac {
-            background: #2f3542;
+
+        .instructions-wrapper {
+            display: grid;
+            gap: 4rem;
         }
-        .btn-mac:hover {
-            box-shadow: 0 10px 20px rgba(47, 53, 66, 0.4);
+
+        .os-section {
+            border-top: 1px solid var(--border);
+            padding-top: 2rem;
         }
-        .instructions {
-            text-align: left;
-            margin-top: 50px;
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+
+        .os-section h2 {
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            color: var(--accent);
         }
-        .instructions h2 {
-            color: var(--primary);
-            border-bottom: 2px solid #ffeaa7;
-            padding-bottom: 10px;
+
+        ol {
+            list-style: none;
+            counter-reset: steps;
         }
-        .mac-title {
-            color: #2f3542 !important;
-            border-bottom: 2px solid #ced6e0 !important;
+
+        ol li {
+            position: relative;
+            padding-left: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 300;
+            font-size: 1.1rem;
         }
-        .step {
-            margin: 15px 0;
-            font-size: 1.1em;
-            line-height: 1.6;
+
+        ol li::before {
+            counter-increment: steps;
+            content: "0" counter(steps);
+            position: absolute;
+            left: 0;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--text);
+            top: 0.2rem;
         }
-        /* Falling petals animation */
-        .petal {
-            position: fixed;
-            background-color: #ff9a9e;
-            border-radius: 15px 0 15px 0;
-            opacity: 0.6;
-            pointer-events: none;
-            z-index: 1;
-            animation: fall linear infinite;
+
+        .security-note {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 46, 126, 0.05);
+            border: 1px solid var(--border);
+            font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: #4A4A4A;
         }
-        @keyframes fall {
-            0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.6; }
-            90% { opacity: 0.6; }
-            100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+            .header-section {
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding: 4rem 2rem;
+                min-height: auto;
+                gap: 4rem;
+            }
+            .content-section {
+                padding: 4rem 2rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .download-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="hero">
-        <h1>🌸 Flower Power 🌸</h1>
-        <div class="subtitle">The ultimate cross-platform manga reader and anime streaming app.</div>
+    <div class="grid-container">
+        <header class="header-section">
+            <div>
+                <!-- Geometric Brutalist Daisy Logo -->
+                <div class="logo-wrapper">
+                    <svg width="56" height="56" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <g fill="var(--accent)">
+                            <!-- Petals -->
+                            <circle cx="50" cy="20" r="18"/>
+                            <circle cx="50" cy="80" r="18"/>
+                            <circle cx="20" cy="50" r="18"/>
+                            <circle cx="80" cy="50" r="18"/>
+                            <circle cx="28" cy="28" r="18"/>
+                            <circle cx="72" cy="72" r="18"/>
+                            <circle cx="28" cy="72" r="18"/>
+                            <circle cx="72" cy="28" r="18"/>
+                        </g>
+                        <!-- Hollow Center -->
+                        <circle cx="50" cy="50" r="14" fill="var(--bg)"/>
+                        <!-- Center Pistil Dot -->
+                        <circle cx="50" cy="50" r="6" fill="var(--accent)"/>
+                    </svg>
+                </div>
+                <h1>Flower<br>Power</h1>
+                <p class="description">Desktop client for manga reading and anime streaming. Open-source, cross-platform.</p>
+            </div>
+            <div class="version-tag">Version 1.0.3</div>
+        </header>
+
+        <main class="content-section">
+            <div class="download-grid">
+                <a href="https://github.com/mattjunior039/flower-power/releases/download/v1.0.3/Flower_Power-v1.0.3-macos.dmg" class="btn">
+                    ↓ macOS Binary
+                </a>
+                <a href="https://github.com/mattjunior039/flower-power/releases/download/v1.0.3/Flower_Power-v1.0.3-windows.exe" class="btn">
+                    ↓ Windows Executable
+                </a>
+            </div>
+
+            <div class="instructions-wrapper">
+                <section class="os-section">
+                    <h2>macOS Deployment</h2>
+                    <ol>
+                        <li>Download the disk image (.dmg).</li>
+                        <li>Mount the volume.</li>
+                        <li>Move the Flower Power application to the Applications directory.</li>
+                        <li>Execute via Spotlight or Launchpad.</li>
+                    </ol>
+                    <div class="security-note">
+                        <strong>System Override:</strong> Flower Power is an unsigned binary. To execute, secondary-click the application icon and select 'Open' to bypass Gatekeeper.
+                    </div>
+                </section>
+
+                <section class="os-section">
+                    <h2>Windows Deployment</h2>
+                    <ol>
+                        <li>Download the executable installer (.exe).</li>
+                        <li>Run the setup file.</li>
+                        <li>Proceed through the installation dialogue.</li>
+                        <li>Execute via the Start Menu shortcut.</li>
+                    </ol>
+                    <div class="security-note">
+                        <strong>SmartScreen Override:</strong> If execution is halted by Windows Defender, select "More Info" followed by "Run anyway".
+                    </div>
+                </section>
+            </div>
+        </main>
     </div>
-
-    <div class="container">
-        <div class="downloads">
-            <a href="https://github.com/mattjunior039/flower-power/releases/download/v1.0.3/Flower_Power-v1.0.3-macos.dmg" class="btn btn-mac">
-                🍎 Download for macOS
-            </a>
-            <a href="https://github.com/mattjunior039/flower-power/releases/download/v1.0.3/Flower_Power-v1.0.3-windows.exe" class="btn">
-                🪟 Download for Windows
-            </a>
-        </div>
-
-        <div class="instructions">
-            <h2 class="mac-title">🍏 macOS Installation Guide</h2>
-            <div class="step">1. Click the "Download for macOS" button above to get the <b>.dmg</b> file.</div>
-            <div class="step">2. Open the downloaded <b>Flower_Power-v1.0.3-macos.dmg</b> file.</div>
-            <div class="step">3. Simply drag and drop the <b>Flower Power</b> icon into your Applications folder.</div>
-            <div class="step">4. Open the app from your Launchpad! <br><br><i>Note: Because this is an open-source app downloaded outside the Mac App Store, your Mac might show a security warning. To bypass it, simply right-click the Flower Power app icon and select <b>'Open'</b>.</i></div>
-
-            <h2 style="margin-top: 50px;">🪟 Windows Installation Guide</h2>
-            <div class="step">1. Click the "Download for Windows" button above to get the <b>.exe</b> installer.</div>
-            <div class="step">2. Double-click the downloaded <b>Flower_Power-v1.0.3-windows.exe</b> file.</div>
-            <div class="step">3. Follow the simple installation wizard instructions on your screen.</div>
-            <div class="step">4. Launch Flower Power from your Desktop shortcut or Start Menu! <br><br><i>Note: If Windows SmartScreen blocks the installation, click <b>"More Info"</b> and then <b>"Run anyway"</b>.</i></div>
-        </div>
-    </div>
-
-    <script>
-        // Simple interactive script to create falling flower petals
-        function createPetal() {
-            const petal = document.createElement('div');
-            petal.classList.add('petal');
-            
-            // Randomize size, position, and duration
-            const size = Math.random() * 15 + 10;
-            petal.style.width = `${size}px`;
-            petal.style.height = `${size}px`;
-            petal.style.left = `${Math.random() * 100}vw`;
-            petal.style.animationDuration = `${Math.random() * 4 + 5}s`; // 5 to 9 seconds
-            
-            document.body.appendChild(petal);
-            
-            // Clean up to prevent memory leaks
-            setTimeout(() => {
-                petal.remove();
-            }, 9000);
-        }
-
-        // Create a new petal every 300ms
-        setInterval(createPetal, 300);
-    </script>
 </body>
 </html>
