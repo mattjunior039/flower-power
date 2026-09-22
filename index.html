@@ -1,4 +1,176 @@
-<h1>Download My App</h1>
-<a href="https://github.com/mattjunior039/flower-power/releases/download/v1.0/Flower_Power-v1.0-macos.dmg">macOS click here to download and install the app</a>
-<br><br>
-<a href="https://github.com/mattjunior039/flower-power/releases/download/v1.0/Flower_Power-v1.0-windows.exe">Windows click here to download and install the app</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flower Power - Download</title>
+    <style>
+        :root {
+            --primary: #ff6b81;
+            --secondary: #2f3542;
+            --bg: #fdf5f6;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--secondary);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        .hero {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+            padding: 80px 20px;
+            text-align: center;
+            border-bottom: 5px solid white;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            font-size: 4em;
+            margin: 0;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(255,107,129,0.5);
+        }
+        .subtitle {
+            font-size: 1.5em;
+            color: white;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        .downloads {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background: var(--primary);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            font-size: 1.2em;
+            border-radius: 50px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+        }
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(255, 107, 129, 0.4);
+        }
+        .btn-mac {
+            background: #2f3542;
+        }
+        .btn-mac:hover {
+            box-shadow: 0 10px 20px rgba(47, 53, 66, 0.4);
+        }
+        .instructions {
+            text-align: left;
+            margin-top: 50px;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        .instructions h2 {
+            color: var(--primary);
+            border-bottom: 2px solid #ffeaa7;
+            padding-bottom: 10px;
+        }
+        .mac-title {
+            color: #2f3542 !important;
+            border-bottom: 2px solid #ced6e0 !important;
+        }
+        .step {
+            margin: 15px 0;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        /* Falling petals animation */
+        .petal {
+            position: fixed;
+            background-color: #ff9a9e;
+            border-radius: 15px 0 15px 0;
+            opacity: 0.6;
+            pointer-events: none;
+            z-index: 1;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>🌸 Flower Power 🌸</h1>
+        <div class="subtitle">The ultimate cross-platform manga reader and anime streaming app.</div>
+    </div>
+
+    <div class="container">
+        <div class="downloads">
+            <a href="https://github.com/mattjunior039/flower-power/releases/download/v1.0.3/Flower_Power-v1.0.3-macos.dmg" class="btn btn-mac">
+                🍎 Download for macOS
+            </a>
+            <a href="https://github.com/mattjunior039/flower-power/releases/download/v1.0.3/Flower_Power-v1.0.3-windows.exe" class="btn">
+                🪟 Download for Windows
+            </a>
+        </div>
+
+        <div class="instructions">
+            <h2 class="mac-title">🍏 macOS Installation Guide</h2>
+            <div class="step">1. Click the "Download for macOS" button above to get the <b>.dmg</b> file.</div>
+            <div class="step">2. Open the downloaded <b>Flower_Power-v1.0.3-macos.dmg</b> file.</div>
+            <div class="step">3. Simply drag and drop the <b>Flower Power</b> icon into your Applications folder.</div>
+            <div class="step">4. Open the app from your Launchpad! <br><br><i>Note: Because this is an open-source app downloaded outside the Mac App Store, your Mac might show a security warning. To bypass it, simply right-click the Flower Power app icon and select <b>'Open'</b>.</i></div>
+
+            <h2 style="margin-top: 50px;">🪟 Windows Installation Guide</h2>
+            <div class="step">1. Click the "Download for Windows" button above to get the <b>.exe</b> installer.</div>
+            <div class="step">2. Double-click the downloaded <b>Flower_Power-v1.0.3-windows.exe</b> file.</div>
+            <div class="step">3. Follow the simple installation wizard instructions on your screen.</div>
+            <div class="step">4. Launch Flower Power from your Desktop shortcut or Start Menu! <br><br><i>Note: If Windows SmartScreen blocks the installation, click <b>"More Info"</b> and then <b>"Run anyway"</b>.</i></div>
+        </div>
+    </div>
+
+    <script>
+        // Simple interactive script to create falling flower petals
+        function createPetal() {
+            const petal = document.createElement('div');
+            petal.classList.add('petal');
+            
+            // Randomize size, position, and duration
+            const size = Math.random() * 15 + 10;
+            petal.style.width = `${size}px`;
+            petal.style.height = `${size}px`;
+            petal.style.left = `${Math.random() * 100}vw`;
+            petal.style.animationDuration = `${Math.random() * 4 + 5}s`; // 5 to 9 seconds
+            
+            document.body.appendChild(petal);
+            
+            // Clean up to prevent memory leaks
+            setTimeout(() => {
+                petal.remove();
+            }, 9000);
+        }
+
+        // Create a new petal every 300ms
+        setInterval(createPetal, 300);
+    </script>
+</body>
+</html>
