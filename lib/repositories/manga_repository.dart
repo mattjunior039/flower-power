@@ -100,7 +100,7 @@ class MangaRepository {
       .or()
       .linkContains("Flower Power/local")
       .or()
-      .linkContains("Flower Power\\local")
+      .linkContains("FlowerPower\\local")
       .findAll();
 
   List<Manga?> getAllByIds(List<int> ids) => isar.mangas.getAllSync(ids);
@@ -150,7 +150,7 @@ class MangaRepository {
             .or()
             .linkContains("Flower Power/local")
             .or()
-            .linkContains("Flower Power\\local"),
+            .linkContains("FlowerPower\\local"),
       )
       .sortByDateAddedDesc()
       .offset(offset)
@@ -170,7 +170,7 @@ class MangaRepository {
             .or()
             .linkContains("Flower Power/local")
             .or()
-            .linkContains("Flower Power\\local"),
+            .linkContains("FlowerPower\\local"),
       )
       .sortByName()
       .offset(offset)
@@ -191,7 +191,7 @@ class MangaRepository {
             .or()
             .linkContains("Flower Power/local")
             .or()
-            .linkContains("Flower Power\\local"),
+            .linkContains("FlowerPower\\local"),
       )
       .nameContains(query, caseSensitive: false)
       .offset(offset)

@@ -208,7 +208,7 @@ List<Source> installedSourcesFor(ItemType itemType) => sourceRepository
 /// Same preview shape as previewTachiBkImport, but for the native
 /// flower_power backup format - already-decoded (and, for encrypted backups,
 /// already-decrypted) JSON rather than a path to re-read from disk.
-TachiBkImportPreview previewFlower PowerBackup(Map<String, dynamic> backup) {
+TachiBkImportPreview previewFlowerPowerBackup(Map<String, dynamic> backup) {
   final mangaList = (backup["manga"] as List?)
       ?.map((e) => Manga.fromJson(e)..itemType = convertToItemType(e))
       .toList();

@@ -38,7 +38,7 @@ Future<void> doBackUp(
   final compression = ref.read(backupCompressionLevelProvider);
   final compressionLevel = compression.clamp(0, 9).toInt();
   try {
-    final zipPath = await writeFlower PowerBackupZip(
+    final zipPath = await writeFlowerPowerBackupZip(
       list: list,
       directory: path,
       compressionLevel: compressionLevel,
@@ -68,7 +68,7 @@ Future<void> doBackUp(
                 ShareParams(
                   files: [XFile(zipPath)],
                   subject: p.basename(zipPath),
-                  title: "Share Flower Power backup file",
+                  title: "Share FlowerPower backup file",
                   sharePositionOrigin: box == null
                       ? null
                       : box.localToGlobal(Offset.zero) & box.size,
@@ -108,7 +108,7 @@ Future<void> doBackUp(
   }
 }
 
-Future<String> writeFlower PowerBackupZip({
+Future<String> writeFlowerPowerBackupZip({
   required List<int> list,
   required String directory,
   int compressionLevel = 6,

@@ -471,7 +471,7 @@ class Settings {
     this.appUiScale = 1.0,
     this.dateFormat = "M/d/y",
     this.relativeTimesTamps = 2,
-    this.flexSchemeColorIndex = 2,
+    this.flexSchemeColorIndex = 0,
     this.themeIsDark = false,
     this.followSystemTheme = false,
     this.incognitoMode = false,

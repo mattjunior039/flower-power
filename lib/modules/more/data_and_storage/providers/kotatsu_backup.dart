@@ -30,7 +30,7 @@ class KotatsuBackupData {
   final List<KotatsuMangaRecord> mangas;
 }
 
-/// Decodes the two Kotatsu sections needed by Flower Power's library restore.
+/// Decodes the two Kotatsu sections needed by FlowerPower's library restore.
 ///
 /// Kotatsu stores one favourite row per manga-category relationship. Grouping
 /// those rows here prevents a multi-category manga from being imported more

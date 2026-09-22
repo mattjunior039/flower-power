@@ -466,7 +466,7 @@ class ExtensionStoreService {
           continue;
         }
 
-        // Native Flower Power source or other supported JSON source
+        // Native FlowerPower source or other supported JSON source
         try {
           final src = Source.fromJson(e);
           if (src.name != null && src.name!.isNotEmpty) {

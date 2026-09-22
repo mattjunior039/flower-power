@@ -87,7 +87,7 @@ class SourceNovel extends NovelItem {
       // is maintained.
       throw Exception(
         'The source returned a novel with no path, so it cannot be opened. '
-        'This is the extension rather than Flower Power'
+        'This is the extension rather than FlowerPower'
         '${json['name'] is String ? ' (while reading "${json['name']}")' : ''}.',
       );
     }

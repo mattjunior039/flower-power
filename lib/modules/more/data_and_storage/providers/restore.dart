@@ -60,9 +60,9 @@ Future<void> doRestore(
   Map<String, bool> categoryDecisions = const {},
   Map<String, int> sourceDecisions = const {},
   // Already-decoded/decrypted flower_power-format backup, if the caller ran
-  // decodeFlower PowerBackup itself to preview it first. Skips re-decoding
+  // decodeFlowerPowerBackup itself to preview it first. Skips re-decoding
   // (and re-prompting for a password) here.
-  Map<String, dynamic>? decodedFlower PowerBackup,
+  Map<String, dynamic>? decodedFlowerPowerBackup,
   // Caller's answer to "upload this restore to your sync server?", asked
   // only when a server was connected. true = upload, false = the user chose
   // to turn sync off instead (so stale server data can't come back and
@@ -104,8 +104,8 @@ Future<void> doRestore(
       case BackupType.flower_power:
         if (!context.mounted) return;
         final backup =
-            decodedFlower PowerBackup ??
-            await decodeFlower PowerBackup(path, context);
+            decodedFlowerPowerBackup ??
+            await decodeFlowerPowerBackup(path, context);
         await ref.read(
           restoreBackupProvider(
             backup,
@@ -275,7 +275,7 @@ Future<void> restoreBackup(
       final currentSettings = settingsRepository.currentOrNull;
       await restoreRepository.run(() {
         if (merge) {
-          _mergeFlower PowerBackup(
+          _mergeFlowerPowerBackup(
             manga: manga,
             chapters: chapters,
             categories: categories,
@@ -429,7 +429,7 @@ Future<void> restoreBackup(
 /// the tables first, so reusing ids is safe), a merge runs against a
 /// non-empty library where the backup's ids could belong to something else
 /// entirely on this device.
-void _mergeFlower PowerBackup({
+void _mergeFlowerPowerBackup({
   required List<Manga>? manga,
   required List<Chapter>? chapters,
   required List<Category>? categories,

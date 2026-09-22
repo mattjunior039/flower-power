@@ -50,7 +50,7 @@ Future<bool> performRestore(BuildContext context, WidgetRef ref) async {
         backupType == BackupType.neko;
 
     if (backupType == BackupType.flower_power) {
-      await _performFlower PowerRestore(context, ref, path);
+      await _performFlowerPowerRestore(context, ref, path);
       return true;
     }
 
@@ -189,7 +189,7 @@ Future<bool> performRestore(BuildContext context, WidgetRef ref) async {
 /// Native flower_power-format restore, with the same merge/replace choice and
 /// category/source conflict resolution the Mihon-family path already has -
 /// the dialogs below are shared with it, not duplicated.
-Future<void> _performFlower PowerRestore(
+Future<void> _performFlowerPowerRestore(
   BuildContext context,
   WidgetRef ref,
   String path,
@@ -198,14 +198,14 @@ Future<void> _performFlower PowerRestore(
   try {
     final Map<String, dynamic> backup;
     try {
-      backup = await decodeFlower PowerBackup(path, context);
+      backup = await decodeFlowerPowerBackup(path, context);
     } catch (e) {
       if (context.mounted) botToast("$e");
       return;
     }
     if (!context.mounted) return;
     final l10n = context.l10n;
-    final preview = previewFlower PowerBackup(backup);
+    final preview = previewFlowerPowerBackup(backup);
 
     final keepExisting = await _chooseImportMode(context);
     if (keepExisting == null || !context.mounted) return;
@@ -273,7 +273,7 @@ Future<void> _performFlower PowerRestore(
           merge: keepExisting,
           categoryDecisions: categoryDecisions,
           sourceDecisions: sourceDecisions,
-          decodedFlower PowerBackup: backup,
+          decodedFlowerPowerBackup: backup,
         ).future,
       );
     } finally {

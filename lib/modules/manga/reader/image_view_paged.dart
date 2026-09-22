@@ -257,7 +257,7 @@ class _ImageViewPagedState extends ConsumerState<ImageViewPaged> {
       }
     }
 
-    // Mappe le scaleType de Flower Power vers le BoxFit
+    // Mappe le scaleType de FlowerPower vers le BoxFit
     final effectiveFit = switch (scaleType) {
       ScaleType.fitWidth => BoxFit.fitWidth,
       ScaleType.fitHeight => BoxFit.fitHeight,

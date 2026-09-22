@@ -25,7 +25,7 @@ Uri buildIssueUrl(
     throw ArgumentError.value(
       report,
       'report',
-      'Only Flower Power app failures can be filed in this repository',
+      'Only FlowerPower app failures can be filed in this repository',
     );
   }
   final cause = report.likelyCause;

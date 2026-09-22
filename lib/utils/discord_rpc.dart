@@ -29,7 +29,7 @@ class DiscordRPC {
     assets: const RPCAssets(largeImage: "app-icon", largeText: "Flower Power"),
     buttons: [
       const RPCButton(
-        label: "Get Flower Power",
+        label: "Get FlowerPower",
         url: "https://github.com/kodjodevf/flower_power",
       ),
       const RPCButton(

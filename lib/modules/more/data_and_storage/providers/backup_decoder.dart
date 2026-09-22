@@ -22,9 +22,9 @@ import 'package:flower_power/services/backup_password_storage.dart';
 /// Public so the restore UI can decode+preview a flower_power-format backup
 /// (merge/replace choice, category/source conflicts) before committing to
 /// the actual restore - doRestore accepts the result back as
-/// decodedFlower PowerBackup so it isn't decrypted (and the password
+/// decodedFlowerPowerBackup so it isn't decrypted (and the password
 /// re-prompted) a second time.
-Future<Map<String, dynamic>> decodeFlower PowerBackup(
+Future<Map<String, dynamic>> decodeFlowerPowerBackup(
   String path,
   BuildContext context,
 ) async {

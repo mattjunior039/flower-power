@@ -23,7 +23,7 @@ final class DoRestoreProvider
       bool merge,
       Map<String, bool> categoryDecisions,
       Map<String, int> sourceDecisions,
-      Map<String, dynamic>? decodedFlower PowerBackup,
+      Map<String, dynamic>? decodedFlowerPowerBackup,
       bool? syncAfterRestore,
     })
     super.argument,
@@ -60,7 +60,7 @@ final class DoRestoreProvider
               bool merge,
               Map<String, bool> categoryDecisions,
               Map<String, int> sourceDecisions,
-              Map<String, dynamic>? decodedFlower PowerBackup,
+              Map<String, dynamic>? decodedFlowerPowerBackup,
               bool? syncAfterRestore,
             });
     return doRestore(
@@ -70,7 +70,7 @@ final class DoRestoreProvider
       merge: argument.merge,
       categoryDecisions: argument.categoryDecisions,
       sourceDecisions: argument.sourceDecisions,
-      decodedFlower PowerBackup: argument.decodedFlower PowerBackup,
+      decodedFlowerPowerBackup: argument.decodedFlowerPowerBackup,
       syncAfterRestore: argument.syncAfterRestore,
     );
   }
@@ -98,7 +98,7 @@ final class DoRestoreFamily extends $Family
             bool merge,
             Map<String, bool> categoryDecisions,
             Map<String, int> sourceDecisions,
-            Map<String, dynamic>? decodedFlower PowerBackup,
+            Map<String, dynamic>? decodedFlowerPowerBackup,
             bool? syncAfterRestore,
           })
         > {
@@ -117,7 +117,7 @@ final class DoRestoreFamily extends $Family
     bool merge = false,
     Map<String, bool> categoryDecisions = const {},
     Map<String, int> sourceDecisions = const {},
-    Map<String, dynamic>? decodedFlower PowerBackup,
+    Map<String, dynamic>? decodedFlowerPowerBackup,
     bool? syncAfterRestore,
   }) => DoRestoreProvider._(
     argument: (
@@ -126,7 +126,7 @@ final class DoRestoreFamily extends $Family
       merge: merge,
       categoryDecisions: categoryDecisions,
       sourceDecisions: sourceDecisions,
-      decodedFlower PowerBackup: decodedFlower PowerBackup,
+      decodedFlowerPowerBackup: decodedFlowerPowerBackup,
       syncAfterRestore: syncAfterRestore,
     ),
     from: this,

@@ -9,7 +9,7 @@ part 'pre_import_backup.g.dart';
 
 Future<String> createLibrarySafetyBackup() async {
   final dir = await _snapshotDirectory();
-  return writeFlower PowerBackupZip(
+  return writeFlowerPowerBackupZip(
     list: const [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     directory: dir.path,
     encrypt: false,
