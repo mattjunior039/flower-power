@@ -164,7 +164,6 @@ flutter:
 
   assets:
     - assets/
-    - assets/extension_server/
     - path: assets/fonts/
       platforms: [android]
     - assets/trackers_icons/
