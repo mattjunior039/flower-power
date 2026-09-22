@@ -839,12 +839,20 @@ class _ExtensionServerScreenState extends ConsumerState<ExtensionServerScreen> {
     if (officialJarPath != null) {
       await File(officialJarPath).delete();
     }
-    // Copy our patched JAR from assets
+    // Stitch our patched JAR dynamically from split assets
     final fixedJarPath = path.join(installDir.path, 'MExtensionServer-v1.0.7-r1.jar');
-    final byteData = await rootBundle.load('assets/extension_server/MExtensionServer-v1.0.7-r1.jar');
-    final buffer = byteData.buffer;
-    await File(fixedJarPath).writeAsBytes(
-        buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+    final outFile = File(fixedJarPath);
+    final parts = ['aa', 'ab', 'ac'];
+    
+    // Open file for writing (append mode)
+    final sink = outFile.openWrite();
+    for (final part in parts) {
+      final byteData = await rootBundle.load('assets/extension_server/MExtensionServer.jar.part.$part');
+      final buffer = byteData.buffer;
+      sink.add(buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+    }
+    await sink.flush();
+    await sink.close();
     // ---------------------------------
 
     final resolvedPaths = await _resolvePathsInDirectory(installDir);
