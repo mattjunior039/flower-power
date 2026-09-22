@@ -1,5 +1,5 @@
 <p align="center">
- <img width=200px height=200px src="assets/app_icons/icon-red.png"/>
+ <img width=200px height=200px src="assets/app_icons/logo.svg"/>
 </p>
 
 <h1 align="center"> Flower Power </h1>
