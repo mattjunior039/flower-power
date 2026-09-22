@@ -59,10 +59,10 @@ Future<void> doRestore(
   bool merge = false,
   Map<String, bool> categoryDecisions = const {},
   Map<String, int> sourceDecisions = const {},
-  // Already-decoded/decrypted mangayomi-format backup, if the caller ran
-  // decodeMangayomiBackup itself to preview it first. Skips re-decoding
+  // Already-decoded/decrypted flower_power-format backup, if the caller ran
+  // decodeFlower PowerBackup itself to preview it first. Skips re-decoding
   // (and re-prompting for a password) here.
-  Map<String, dynamic>? decodedMangayomiBackup,
+  Map<String, dynamic>? decodedFlower PowerBackup,
   // Caller's answer to "upload this restore to your sync server?", asked
   // only when a server was connected. true = upload, false = the user chose
   // to turn sync off instead (so stale server data can't come back and
@@ -91,7 +91,7 @@ Future<void> doRestore(
     // Zip filenames aren't encrypted even when file content is, so this
     // initial pass (no password) is always enough to list files and
     // determine backup type. Password resolution only happens below, and
-    // only for the mangayomi format, right before reading file *content*.
+    // only for the flower_power format, right before reading file *content*.
     final probeStream = InputFileStream(path);
     final Archive archive;
     try {
@@ -101,11 +101,11 @@ Future<void> doRestore(
     }
     final backupType = checkBackupType(path, archive);
     switch (backupType) {
-      case BackupType.mangayomi:
+      case BackupType.flower_power:
         if (!context.mounted) return;
         final backup =
-            decodedMangayomiBackup ??
-            await decodeMangayomiBackup(path, context);
+            decodedFlower PowerBackup ??
+            await decodeFlower PowerBackup(path, context);
         await ref.read(
           restoreBackupProvider(
             backup,
@@ -275,7 +275,7 @@ Future<void> restoreBackup(
       final currentSettings = settingsRepository.currentOrNull;
       await restoreRepository.run(() {
         if (merge) {
-          _mergeMangayomiBackup(
+          _mergeFlower PowerBackup(
             manga: manga,
             chapters: chapters,
             categories: categories,
@@ -420,7 +420,7 @@ Future<void> restoreBackup(
   }
 }
 
-/// Adds a mangayomi-format backup's library into the existing one instead of
+/// Adds a flower_power-format backup's library into the existing one instead of
 /// wiping it first. Mirrors what restoreTachiBkBackup already does for
 /// Mihon-family merges: match manga by link, keep the existing entry's
 /// state on conflict, only carry over chapters/history/updates that don't
@@ -429,7 +429,7 @@ Future<void> restoreBackup(
 /// the tables first, so reusing ids is safe), a merge runs against a
 /// non-empty library where the backup's ids could belong to something else
 /// entirely on this device.
-void _mergeMangayomiBackup({
+void _mergeFlower PowerBackup({
   required List<Manga>? manga,
   required List<Chapter>? chapters,
   required List<Category>? categories,

@@ -187,7 +187,7 @@ class AidokuDeepLink {
 
 /// Simplified filter-definition payload sent to Dart (to render search UI).
 /// Only the common configurations are surfaced for now (matches the ones
-/// actually rendered by mangayomi's `FilterList` UI model).
+/// actually rendered by flower_power's `FilterList` UI model).
 class AidokuFilter {
   final String id;
   final String? title;

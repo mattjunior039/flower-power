@@ -38,7 +38,7 @@ Future<void> doBackUp(
   final compression = ref.read(backupCompressionLevelProvider);
   final compressionLevel = compression.clamp(0, 9).toInt();
   try {
-    final zipPath = await writeMangayomiBackupZip(
+    final zipPath = await writeFlower PowerBackupZip(
       list: list,
       directory: path,
       compressionLevel: compressionLevel,
@@ -68,7 +68,7 @@ Future<void> doBackUp(
                 ShareParams(
                   files: [XFile(zipPath)],
                   subject: p.basename(zipPath),
-                  title: "Share Mangayomi backup file",
+                  title: "Share Flower Power backup file",
                   sharePositionOrigin: box == null
                       ? null
                       : box.localToGlobal(Offset.zero) & box.size,
@@ -108,7 +108,7 @@ Future<void> doBackUp(
   }
 }
 
-Future<String> writeMangayomiBackupZip({
+Future<String> writeFlower PowerBackupZip({
   required List<int> list,
   required String directory,
   int compressionLevel = 6,
@@ -190,7 +190,7 @@ Future<String> writeMangayomiBackupZip({
   }
   final regExp = RegExp(r'[^a-zA-Z0-9 .()\-\s]');
   final name =
-      'mangayomi_${DateTime.now().toString().replaceAll(regExp, '_').replaceAll(' ', '_')}';
+      'flower_power_${DateTime.now().toString().replaceAll(regExp, '_').replaceAll(' ', '_')}';
   final backupFilePath = p.join(directory, "$name.backup.db");
   final file = File(backupFilePath);
 

@@ -297,7 +297,7 @@ class AidokuExtensionService implements ExtensionService {
   @override
   Future<MPages> search(String query, int page, List<dynamic> filters) async {
     final s = await _ensureInitialized();
-    final filterValues = _mapMangayomiFiltersToAidoku(filters);
+    final filterValues = _mapFlower PowerFiltersToAidoku(filters);
     final res = await s.getSearchMangaList(query, page, filterValues);
     return _mapMangaPageResult(res);
   }
@@ -950,7 +950,7 @@ class AidokuExtensionService implements ExtensionService {
     return lower;
   }
 
-  List<aidoku.FilterValue> _mapMangayomiFiltersToAidoku(List<dynamic> filters) {
+  List<aidoku.FilterValue> _mapFlower PowerFiltersToAidoku(List<dynamic> filters) {
     final result = <aidoku.FilterValue>[];
     for (final f in filters) {
       if (f is m_filter.SelectFilter) {

@@ -24,7 +24,7 @@ void main() {
 
   setUp(() async {
     databaseDirectory = await Directory.systemTemp.createTemp(
-      'mangayomi-download-queue-',
+      'flower_power-download-queue-',
     );
     database = await Isar.open(
       [MangaSchema, ChapterSchema, DownloadSchema, SettingsSchema, SourceSchema],

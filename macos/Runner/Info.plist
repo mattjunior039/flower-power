@@ -41,10 +41,10 @@
 	<array>
     	<dict>
         	<key>CFBundleURLName</key>
-        	<string>mangayomi</string>
+        	<string>flower_power</string>
         	<key>CFBundleURLSchemes</key>
         	<array>
-            	<string>mangayomi</string>
+            	<string>flower_power</string>
         	</array>
     	</dict>
 	</array>

@@ -400,11 +400,11 @@ class _AnimeStreamPageState extends riv.ConsumerState<AnimeStreamPage>
             generated.mpv_format.MPV_FORMAT_NODE,
         "user-data/aniyomi/launch_int_picker":
             generated.mpv_format.MPV_FORMAT_NODE,
-        "user-data/mangayomi/chapter_titles":
+        "user-data/flower_power/chapter_titles":
             generated.mpv_format.MPV_FORMAT_NODE,
-        "user-data/mangayomi/current_chapter":
+        "user-data/flower_power/current_chapter":
             generated.mpv_format.MPV_FORMAT_INT64,
-        "user-data/mangayomi/selected_shader":
+        "user-data/flower_power/selected_shader":
             generated.mpv_format.MPV_FORMAT_NODE,
       },
       eventHandler: _handleMpvEvents,
@@ -796,7 +796,7 @@ class _AnimeStreamPageState extends riv.ConsumerState<AnimeStreamPage>
         );
         nativePlayer.setProperty("user-data/aniyomi/launch_int_picker", "");
         break;
-      case "mangayomi/chapter_titles":
+      case "flower_power/chapter_titles":
         if (value.ref.format == generated.mpv_format.MPV_FORMAT_STRING) {
           final text = value.ref.u.string.cast<Utf8>().toDartString();
           final data = jsonDecode(text) as List<dynamic>;
@@ -812,7 +812,7 @@ class _AnimeStreamPageState extends riv.ConsumerState<AnimeStreamPage>
               .toList();
         }
         break;
-      case "mangayomi/selected_shader":
+      case "flower_power/selected_shader":
         final text = _readMpvString(value);
         _selectedShader.value = text ?? '';
         break;
@@ -821,7 +821,7 @@ class _AnimeStreamPageState extends riv.ConsumerState<AnimeStreamPage>
 
   Future<void> _handleMpvNumberEvents(String propName, int value) async {
     switch (propName.substring(10)) {
-      case "mangayomi/current_chapter":
+      case "flower_power/current_chapter":
         _currentChapterMark.value = max(value, 0);
         break;
     }

@@ -22,7 +22,7 @@ Source? getSource(
       orElse: () {
         if (sourceId == null) throw ("Error when getting source");
         // The exact id is gone - e.g. the same source got reinstalled from a
-        // different repo (mangayomi-native vs. Mihon/ApkBridge), which
+        // different repo (flower_power-native vs. Mihon/ApkBridge), which
         // generates a different id for what's still the same source. Fall
         // back to matching by name+lang among what's actually installed,
         // same as when a manga was never bound to a source id at all.

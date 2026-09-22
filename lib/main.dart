@@ -121,7 +121,7 @@ void main(List<String> args) async {
         await WindowGeometry.restore();
       }
       if (Platform.isWindows) {
-        registerProtocolHandler("mangayomi");
+        registerProtocolHandler("flower_power");
       }
       final storage = StorageProvider();
       // Don't force the Android "all files access" (MANAGE_EXTERNAL_STORAGE)
@@ -188,7 +188,7 @@ class _StartupErrorApp extends StatelessWidget {
                 const Icon(Icons.error_outline, size: 64, color: Colors.red),
                 const SizedBox(height: 16),
                 const Text(
-                  'Failed to start Mangayomi',
+                  'Failed to start Flower Power',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
@@ -212,7 +212,7 @@ Future<void> _postLaunchInit(StorageProvider storage) async {
   // six empty indexed lookups, so there's no real cost to checking again.
   unawaited(backfillMissingClientIds());
   unawaited(MDownloader.initializeIsolatePool(poolSize: 6));
-  final hivePath = isApple ? "databases" : p.join("Mangayomi", "databases");
+  final hivePath = isApple ? "databases" : p.join("Flower Power", "databases");
   await Hive.initFlutter(Platform.isAndroid ? "" : hivePath);
   Hive.registerAdapter(TrackSearchAdapter());
   if (isDesktop && !kDebugMode) {
@@ -637,7 +637,7 @@ class _MyAppState extends ConsumerState<MyApp>
       final filesMissing =
           !(await mpvFile.exists()) && !(await inputFile.exists());
       if (filesMissing) {
-        final bytes = await rootBundle.load("assets/mangayomi_mpv.zip");
+        final bytes = await rootBundle.load("assets/flower_power_mpv.zip");
         final archive = ZipDecoder().decodeBytes(bytes.buffer.asUint8List());
         final shadersDir = Directory(p.join(dir.path, 'shaders'));
         final scriptsDir = Directory(p.join(dir.path, 'scripts'));

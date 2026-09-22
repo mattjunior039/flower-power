@@ -432,7 +432,7 @@ class _DownloadFileScreenState extends ConsumerState<DownloadFileScreen> {
     Directory? dir = Directory('/storage/emulated/0/Download');
     if (!await dir.exists()) dir = await getExternalStorageDirectory();
     final file = File(
-      '${dir!.path}/${url.split("/").lastOrNull ?? "Mangayomi.apk"}',
+      '${dir!.path}/${url.split("/").lastOrNull ?? "Flower Power.apk"}',
     );
     if (await file.exists()) {
       setState(() {

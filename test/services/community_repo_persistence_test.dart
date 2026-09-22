@@ -27,7 +27,7 @@ void main() {
 
   setUp(() async {
     databaseDirectory = await Directory.systemTemp.createTemp(
-      'mangayomi-community-repo-',
+      'flower_power-community-repo-',
     );
     app.isar = await Isar.open(
       [SettingsSchema, SourceSchema],

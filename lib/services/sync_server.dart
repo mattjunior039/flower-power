@@ -69,10 +69,10 @@ class SyncServer extends _$SyncServer {
       final state = _generatePkceVerifier();
       final redirectUri = isDesktop
           ? 'http://localhost:$_desktopOAuthCallbackPort/callback'
-          : 'mangayomi://oauth-callback';
+          : 'flower_power://oauth-callback';
       final callbackUrlScheme = isDesktop
           ? 'http://localhost:$_desktopOAuthCallbackPort'
-          : 'mangayomi';
+          : 'flower_power';
 
       final authorizeUrl = Uri.parse('$server/api/oauth/authorize').replace(
         queryParameters: {

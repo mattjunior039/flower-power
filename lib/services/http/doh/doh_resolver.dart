@@ -173,7 +173,7 @@ class DoHResolver {
     );
 
     request.headers.set('Accept', 'application/dns-json');
-    request.headers.set('User-Agent', 'Mangayomi/1.0');
+    request.headers.set('User-Agent', 'Flower Power/1.0');
 
     final response = await request.close().timeout(_requestTimeout);
 

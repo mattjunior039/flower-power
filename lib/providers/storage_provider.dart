@@ -73,14 +73,14 @@ class StorageProvider {
   Future<Directory?> getDefaultDirectory() async {
     Directory? directory;
     if (Platform.isAndroid) {
-      directory = Directory("/storage/emulated/0/Mangayomi/");
+      directory = Directory("/storage/emulated/0/Flower Power/");
     } else {
       final dir = await _documentsDirectory();
-      // The documents dir in iOS is already named "Mangayomi".
-      // Appending "Mangayomi" to the documents dir would create
-      // unnecessarily nested Mangayomi/Mangayomi/ folder.
+      // The documents dir in iOS is already named "Flower Power".
+      // Appending "Flower Power" to the documents dir would create
+      // unnecessarily nested Flower Power/Flower Power/ folder.
       if (Platform.isIOS) return dir;
-      directory = Directory(path.join(dir.path, 'Mangayomi'));
+      directory = Directory(path.join(dir.path, 'Flower Power'));
     }
     return directory;
   }
@@ -165,16 +165,16 @@ class StorageProvider {
     }
     if (Platform.isAndroid) {
       directory = Directory(
-        dPath.isEmpty ? "/storage/emulated/0/Mangayomi/" : "$dPath/",
+        dPath.isEmpty ? "/storage/emulated/0/Flower Power/" : "$dPath/",
       );
     } else {
       final dir = await _documentsDirectory();
       final p = dPath.isEmpty ? dir.path : dPath;
-      // The documents dir in iOS is already named "Mangayomi".
-      // Appending "Mangayomi" to the documents dir would create
-      // unnecessarily nested Mangayomi/Mangayomi/ folder.
+      // The documents dir in iOS is already named "Flower Power".
+      // Appending "Flower Power" to the documents dir would create
+      // unnecessarily nested Flower Power/Flower Power/ folder.
       if (Platform.isIOS) return Directory(p);
-      directory = Directory(path.join(p, 'Mangayomi'));
+      directory = Directory(path.join(p, 'Flower Power'));
     }
     return directory;
   }
@@ -234,7 +234,7 @@ class StorageProvider {
       // So they are not just in the app folders root dir
       dbDir = path.join(dir.path, 'databases');
     } else {
-      dbDir = path.join(dir.path, 'Mangayomi', 'databases');
+      dbDir = path.join(dir.path, 'Flower Power', 'databases');
     }
     if (Platform.isMacOS) {
       await _migrateLegacyMacosDatabase(dbDir);
@@ -252,7 +252,7 @@ class StorageProvider {
     try {
       final docs = await getApplicationDocumentsDirectory();
       final legacyDir = Directory(
-        path.join(docs.path, 'Mangayomi', 'databases'),
+        path.join(docs.path, 'Flower Power', 'databases'),
       );
       if (!await legacyDir.exists()) return;
       final newDir = Directory(newDbDir);
@@ -271,7 +271,7 @@ class StorageProvider {
     } catch (e) {
       // Migration is best-effort. Falling back to a fresh DB is preferable
       // to crashing on launch — the user can manually move the legacy
-      // ~/Documents/Mangayomi/databases/ contents if needed.
+      // ~/Documents/Flower Power/databases/ contents if needed.
       if (kDebugMode) {
         debugPrint('[storage] macOS DB migration skipped: $e');
       }
@@ -281,7 +281,7 @@ class StorageProvider {
   Future<Directory?> getGalleryDirectory() async {
     String gPath;
     if (Platform.isAndroid) {
-      gPath = "/storage/emulated/0/Pictures/Mangayomi/";
+      gPath = "/storage/emulated/0/Pictures/Flower Power/";
     } else {
       gPath = path.join((await getDirectory())!.path, 'Pictures');
     }
@@ -338,7 +338,7 @@ class StorageProvider {
         BackupPasswordFallbackSchema,
       ],
       directory: dir!.path,
-      name: "mangayomiDb",
+      name: "flower_powerDb",
       inspector: inspector,
     );
     try {

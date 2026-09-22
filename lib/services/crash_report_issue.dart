@@ -6,7 +6,7 @@ import 'package:flower_power/services/crash_report.dart';
 /// knows filled in. Nothing is sent by opening it: the reader lands on a
 /// GitHub page holding a draft, sees every word of it, and decides whether to
 /// press submit. That is the whole reason this is a link and not a POST.
-const _repo = 'kodjodevf/mangayomi';
+const _repo = 'kodjodevf/flower_power';
 const _template = 'report_issue.yml';
 
 /// GitHub stops honouring prefilled values on very long URLs, so the body
@@ -25,7 +25,7 @@ Uri buildIssueUrl(
     throw ArgumentError.value(
       report,
       'report',
-      'Only Mangayomi app failures can be filed in this repository',
+      'Only Flower Power app failures can be filed in this repository',
     );
   }
   final cause = report.likelyCause;
@@ -87,7 +87,7 @@ Uri buildIssueUrl(
     'reproduce-steps': _cap(whatHappened.toString()),
     'actual-behavior': _cap(actual.toString()),
     'expected-behavior': 'No error.',
-    'mangayomi-version': appVersion,
+    'flower_power-version': appVersion,
     'device': device,
     'other-details': _cap(details.toString()),
   };

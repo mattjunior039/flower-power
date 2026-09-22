@@ -18,7 +18,7 @@ import 'tracker_account.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'simkl.g.dart';
 
-/// Which Simkl library a mangayomi library maps to.
+/// Which Simkl library a flower_power library maps to.
 ///
 /// Simkl keeps anime apart from tv, with their own endpoints. Asking the tv
 /// ones for an anime is why tracked entries landed under TV Shows (#922):
@@ -41,7 +41,7 @@ class Simkl extends _$Simkl implements BaseTracker {
   static final _isDesktop = (Platform.isWindows || Platform.isLinux);
   static final _redirectUri = _isDesktop
       ? 'http://localhost:43824'
-      : 'mangayomi://';
+      : 'flower_power://';
   static const _clientId =
       '1e0a52930b1bdface4e30c1a94a44641475f3c80b69a5ea939562153fccffb68';
   static const _clientSecret =
@@ -61,7 +61,7 @@ class Simkl extends _$Simkl implements BaseTracker {
   Future<bool?> login() async {
     final callbackUrlScheme = _isDesktop
         ? 'http://localhost:43824'
-        : 'mangayomi';
+        : 'flower_power';
     final loginUrl = _authUrl();
 
     try {

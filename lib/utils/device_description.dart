@@ -37,7 +37,7 @@ Future<String> deviceDescription() async {
   return Platform.operatingSystem;
 }
 
-/// The app version and build, for the "Mangayomi version" field.
+/// The app version and build, for the "Flower Power version" field.
 Future<String> appVersionDescription() async {
   try {
     final info = await PackageInfo.fromPlatform();

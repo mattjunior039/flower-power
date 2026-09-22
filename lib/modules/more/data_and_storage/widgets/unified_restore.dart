@@ -49,8 +49,8 @@ Future<bool> performRestore(BuildContext context, WidgetRef ref) async {
         backupType == BackupType.aniyomi ||
         backupType == BackupType.neko;
 
-    if (backupType == BackupType.mangayomi) {
-      await _performMangayomiRestore(context, ref, path);
+    if (backupType == BackupType.flower_power) {
+      await _performFlower PowerRestore(context, ref, path);
       return true;
     }
 
@@ -186,10 +186,10 @@ Future<bool> performRestore(BuildContext context, WidgetRef ref) async {
   }
 }
 
-/// Native mangayomi-format restore, with the same merge/replace choice and
+/// Native flower_power-format restore, with the same merge/replace choice and
 /// category/source conflict resolution the Mihon-family path already has -
 /// the dialogs below are shared with it, not duplicated.
-Future<void> _performMangayomiRestore(
+Future<void> _performFlower PowerRestore(
   BuildContext context,
   WidgetRef ref,
   String path,
@@ -198,14 +198,14 @@ Future<void> _performMangayomiRestore(
   try {
     final Map<String, dynamic> backup;
     try {
-      backup = await decodeMangayomiBackup(path, context);
+      backup = await decodeFlower PowerBackup(path, context);
     } catch (e) {
       if (context.mounted) botToast("$e");
       return;
     }
     if (!context.mounted) return;
     final l10n = context.l10n;
-    final preview = previewMangayomiBackup(backup);
+    final preview = previewFlower PowerBackup(backup);
 
     final keepExisting = await _chooseImportMode(context);
     if (keepExisting == null || !context.mounted) return;
@@ -273,7 +273,7 @@ Future<void> _performMangayomiRestore(
           merge: keepExisting,
           categoryDecisions: categoryDecisions,
           sourceDecisions: sourceDecisions,
-          decodedMangayomiBackup: backup,
+          decodedFlower PowerBackup: backup,
         ).future,
       );
     } finally {

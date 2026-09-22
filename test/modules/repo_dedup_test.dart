@@ -90,16 +90,16 @@ void main() {
       }
 
       expect(
-        resolveDisplayName('Mangayomi extensions (m2k3a)', 'https://m2k3a.github.io/mangayomi-extensions/index.json'),
-        'Mangayomi extensions (m2k3a)',
+        resolveDisplayName('Flower Power extensions (m2k3a)', 'https://m2k3a.github.io/flower_power-extensions/index.json'),
+        'Flower Power extensions (m2k3a)',
       );
       expect(
-        resolveDisplayName('index.json', 'https://m2k3a.github.io/mangayomi-extensions/index.json'),
-        'mangayomi-extensions',
+        resolveDisplayName('index.json', 'https://m2k3a.github.io/flower_power-extensions/index.json'),
+        'flower_power-extensions',
       );
       expect(
-        resolveDisplayName(null, 'https://m2k3a.github.io/mangayomi-extensions/index.json'),
-        'mangayomi-extensions',
+        resolveDisplayName(null, 'https://m2k3a.github.io/flower_power-extensions/index.json'),
+        'flower_power-extensions',
       );
     });
   });

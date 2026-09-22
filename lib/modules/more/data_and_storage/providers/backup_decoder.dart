@@ -1,4 +1,4 @@
-// Decoding a mangayomi-format backup's JSON contents, transparently
+// Decoding a flower_power-format backup's JSON contents, transparently
 // handling AES-encrypted backups. Kept apart from restore.dart: this only
 // reads and decrypts a file, it never touches Isar.
 import 'dart:convert';
@@ -19,12 +19,12 @@ import 'package:flower_power/services/backup_password_storage.dart';
 /// restored backup overwrites the local settings, just kept out of the
 /// generic Settings JSON round-trip (see backup_password_fallback.dart).
 ///
-/// Public so the restore UI can decode+preview a mangayomi-format backup
+/// Public so the restore UI can decode+preview a flower_power-format backup
 /// (merge/replace choice, category/source conflicts) before committing to
 /// the actual restore - doRestore accepts the result back as
-/// decodedMangayomiBackup so it isn't decrypted (and the password
+/// decodedFlower PowerBackup so it isn't decrypted (and the password
 /// re-prompted) a second time.
-Future<Map<String, dynamic>> decodeMangayomiBackup(
+Future<Map<String, dynamic>> decodeFlower PowerBackup(
   String path,
   BuildContext context,
 ) async {

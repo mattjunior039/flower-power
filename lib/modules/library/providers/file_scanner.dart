@@ -65,15 +65,15 @@ class DownloadLocalFolderNameState extends _$DownloadLocalFolderNameState {
   }
 }
 
-/// Scans `Mangayomi/local` folder (if exists) for Mangas/Animes and imports in library.
+/// Scans `Flower Power/local` folder (if exists) for Mangas/Animes and imports in library.
 ///
 /// **Folder structure:**
 /// ```
-/// Mangayomi/local/MangaName/CustomCover.jpg (optional)
-/// Mangayomi/local/MangaName/Chapter1/Page1.jpg
-/// Mangayomi/local/MangaName/Chapter2.cbz
-/// Mangayomi/local/AnimeName/Episode1.mp4
-/// Mangayomi/local/NovelName/NovelName.epub
+/// Flower Power/local/MangaName/CustomCover.jpg (optional)
+/// Flower Power/local/MangaName/Chapter1/Page1.jpg
+/// Flower Power/local/MangaName/Chapter2.cbz
+/// Flower Power/local/AnimeName/Episode1.mp4
+/// Flower Power/local/NovelName/NovelName.epub
 /// ```
 /// **Supported filetypes:** (taken from lib/modules/library/providers/local_archive.dart, line 98)
 /// ```
@@ -737,7 +737,7 @@ String localVirtualPathFromStoredPath(
     }
   }
 
-  const legacyLocalPath = 'Mangayomi/local';
+  const legacyLocalPath = 'Flower Power/local';
   final legacyIndex = normalized.indexOf(legacyLocalPath);
   if (legacyIndex != -1) {
     final relative = normalized

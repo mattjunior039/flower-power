@@ -21,8 +21,8 @@ void main() {
       'a home directory becomes a tilde, taking the account name with it',
       () {
         expect(
-          redact('FileSystemException: /Users/somebody/Mangayomi/logs.txt'),
-          contains('~/Mangayomi/logs.txt'),
+          redact('FileSystemException: /Users/somebody/Flower Power/logs.txt'),
+          contains('~/Flower Power/logs.txt'),
         );
         expect(
           redact(r'at C:\Users\somebody\AppData\file.dart'),
@@ -344,7 +344,7 @@ void main() {
       expect(
         isExtensionFailure(
           'Exception: The source returned a novel with no path, so it cannot '
-          'be opened. This is the extension rather than Mangayomi.',
+          'be opened. This is the extension rather than Flower Power.',
         ),
         true,
       );
@@ -591,9 +591,9 @@ void main() {
       final url = buildIssueUrl(report, appVersion: '0.8.8', device: 'Pixel 5');
 
       expect(url.host, 'github.com');
-      expect(url.path, '/kodjodevf/mangayomi/issues/new');
+      expect(url.path, '/kodjodevf/flower_power/issues/new');
       expect(url.queryParameters['template'], 'report_issue.yml');
-      expect(url.queryParameters['mangayomi-version'], '0.8.8');
+      expect(url.queryParameters['flower_power-version'], '0.8.8');
       expect(url.queryParameters['device'], 'Pixel 5');
       expect(url.queryParameters['title'], contains('RangeError'));
       expect(url.queryParameters['title'], contains('/browse'));

@@ -36,7 +36,7 @@ const _libraryRoutes = {
 ///
 /// A new install opens on an empty library, an empty Browse, and a nav bar
 /// carrying three libraries the user may well not want. Nothing says that
-/// Mangayomi ships with no sources of its own and that supplying them is the
+/// Flower Power ships with no sources of its own and that supplying them is the
 /// first job. This asks the three things worth asking, applies them, and leaves
 /// the user on Browse with a repository already added, which is where the
 /// extensions it holds are waiting to be installed.
@@ -264,7 +264,7 @@ class _OnboardingScreenState extends ConsumerState<_OnboardingBody>
   ///
   /// A backup carries repositories, library and settings, which answers every
   /// question this screen asks. Anyone who has one should not have to walk the
-  /// steps first and find Settings afterwards. Mangayomi's own backups and
+  /// steps first and find Settings afterwards. Flower Power's own backups and
   /// Mihon, Aniyomi and Neko ones all go through the same picker.
   Future<void> _restore() async {
     final restored = await performRestore(context, ref);
@@ -274,9 +274,9 @@ class _OnboardingScreenState extends ConsumerState<_OnboardingBody>
     // opposite of what cancelling should do.
     if (!restored) return;
     // Whether the backup brought sources with it depends on what it was. A
-    // Mangayomi backup carries the repositories, but only when its settings
+    // Flower Power backup carries the repositories, but only when its settings
     // were included in it, and a Mihon, Aniyomi or Neko backup references its
-    // own ecosystem's extensions and never carries Mangayomi repositories.
+    // own ecosystem's extensions and never carries Flower Power repositories.
     //
     // So ask rather than assume. Repositories present means the rest of this
     // screen has been answered already; none means the one question still

@@ -115,15 +115,15 @@ abstract class _$DownloadLocalFolderNameState extends $Notifier<String?> {
   }
 }
 
-/// Scans `Mangayomi/local` folder (if exists) for Mangas/Animes and imports in library.
+/// Scans `Flower Power/local` folder (if exists) for Mangas/Animes and imports in library.
 ///
 /// **Folder structure:**
 /// ```
-/// Mangayomi/local/MangaName/CustomCover.jpg (optional)
-/// Mangayomi/local/MangaName/Chapter1/Page1.jpg
-/// Mangayomi/local/MangaName/Chapter2.cbz
-/// Mangayomi/local/AnimeName/Episode1.mp4
-/// Mangayomi/local/NovelName/NovelName.epub
+/// Flower Power/local/MangaName/CustomCover.jpg (optional)
+/// Flower Power/local/MangaName/Chapter1/Page1.jpg
+/// Flower Power/local/MangaName/Chapter2.cbz
+/// Flower Power/local/AnimeName/Episode1.mp4
+/// Flower Power/local/NovelName/NovelName.epub
 /// ```
 /// **Supported filetypes:** (taken from lib/modules/library/providers/local_archive.dart, line 98)
 /// ```
@@ -136,15 +136,15 @@ abstract class _$DownloadLocalFolderNameState extends $Notifier<String?> {
 @ProviderFor(scanLocalLibrary)
 final scanLocalLibraryProvider = ScanLocalLibraryProvider._();
 
-/// Scans `Mangayomi/local` folder (if exists) for Mangas/Animes and imports in library.
+/// Scans `Flower Power/local` folder (if exists) for Mangas/Animes and imports in library.
 ///
 /// **Folder structure:**
 /// ```
-/// Mangayomi/local/MangaName/CustomCover.jpg (optional)
-/// Mangayomi/local/MangaName/Chapter1/Page1.jpg
-/// Mangayomi/local/MangaName/Chapter2.cbz
-/// Mangayomi/local/AnimeName/Episode1.mp4
-/// Mangayomi/local/NovelName/NovelName.epub
+/// Flower Power/local/MangaName/CustomCover.jpg (optional)
+/// Flower Power/local/MangaName/Chapter1/Page1.jpg
+/// Flower Power/local/MangaName/Chapter2.cbz
+/// Flower Power/local/AnimeName/Episode1.mp4
+/// Flower Power/local/NovelName/NovelName.epub
 /// ```
 /// **Supported filetypes:** (taken from lib/modules/library/providers/local_archive.dart, line 98)
 /// ```
@@ -157,15 +157,15 @@ final scanLocalLibraryProvider = ScanLocalLibraryProvider._();
 final class ScanLocalLibraryProvider
     extends $FunctionalProvider<AsyncValue<void>, void, FutureOr<void>>
     with $FutureModifier<void>, $FutureProvider<void> {
-  /// Scans `Mangayomi/local` folder (if exists) for Mangas/Animes and imports in library.
+  /// Scans `Flower Power/local` folder (if exists) for Mangas/Animes and imports in library.
   ///
   /// **Folder structure:**
   /// ```
-  /// Mangayomi/local/MangaName/CustomCover.jpg (optional)
-  /// Mangayomi/local/MangaName/Chapter1/Page1.jpg
-  /// Mangayomi/local/MangaName/Chapter2.cbz
-  /// Mangayomi/local/AnimeName/Episode1.mp4
-  /// Mangayomi/local/NovelName/NovelName.epub
+  /// Flower Power/local/MangaName/CustomCover.jpg (optional)
+  /// Flower Power/local/MangaName/Chapter1/Page1.jpg
+  /// Flower Power/local/MangaName/Chapter2.cbz
+  /// Flower Power/local/AnimeName/Episode1.mp4
+  /// Flower Power/local/NovelName/NovelName.epub
   /// ```
   /// **Supported filetypes:** (taken from lib/modules/library/providers/local_archive.dart, line 98)
   /// ```

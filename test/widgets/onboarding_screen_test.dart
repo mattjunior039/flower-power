@@ -119,7 +119,7 @@ void main() {
       tester,
     ) async {
       await pump(tester);
-      expect(find.text('Welcome to Mangayomi'), findsOneWidget);
+      expect(find.text('Welcome to Flower Power'), findsOneWidget);
       for (final label in ['Manga', 'Anime', 'Novel']) {
         expect(find.widgetWithText(FilterChip, label), findsOneWidget);
       }
@@ -381,7 +381,7 @@ void main() {
 
       await tester.tap(find.widgetWithIcon(IconButton, Icons.arrow_back));
       await tester.pumpAndSettle();
-      expect(find.text('Welcome to Mangayomi'), findsOneWidget);
+      expect(find.text('Welcome to Flower Power'), findsOneWidget);
       expect(find.widgetWithIcon(IconButton, Icons.arrow_back), findsNothing);
     });
 
@@ -400,7 +400,7 @@ void main() {
       await tester.tap(find.widgetWithIcon(IconButton, Icons.arrow_back));
       await tester.pumpAndSettle();
       expect(find.text('Your libraries'), findsNothing);
-      expect(find.text('Welcome to Mangayomi'), findsOneWidget);
+      expect(find.text('Welcome to Flower Power'), findsOneWidget);
     });
   });
 

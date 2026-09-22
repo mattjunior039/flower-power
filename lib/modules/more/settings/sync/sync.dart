@@ -19,7 +19,7 @@ import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SyncScreen extends ConsumerWidget {
-  static const serverUrl = "https://github.com/Schnitzel5/mangayomi-server";
+  static const serverUrl = "https://github.com/Schnitzel5/flower_power-server";
 
   const SyncScreen({super.key});
 

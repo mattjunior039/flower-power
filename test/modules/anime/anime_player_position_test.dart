@@ -23,7 +23,7 @@ void main() {
 
   setUp(() async {
     databaseDirectory = await Directory.systemTemp.createTemp(
-      'mangayomi-anime-position-',
+      'flower_power-anime-position-',
     );
     database = await Isar.open(
       [

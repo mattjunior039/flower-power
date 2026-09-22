@@ -26,11 +26,11 @@ class DiscordRPC {
 
   /// Instance of the current RPC activity
   final RpcActivity activity = RpcActivity(
-    assets: const RPCAssets(largeImage: "app-icon", largeText: "Mangayomi"),
+    assets: const RPCAssets(largeImage: "app-icon", largeText: "Flower Power"),
     buttons: [
       const RPCButton(
-        label: "Get Mangayomi",
-        url: "https://github.com/kodjodevf/mangayomi",
+        label: "Get Flower Power",
+        url: "https://github.com/kodjodevf/flower_power",
       ),
       const RPCButton(
         label: "Join us",
@@ -78,7 +78,7 @@ class DiscordRPC {
     await updateActivity(
       details: "Idle",
       state: "-----",
-      assets: const RPCAssets(largeImage: "app-icon", largeText: "Mangayomi"),
+      assets: const RPCAssets(largeImage: "app-icon", largeText: "Flower Power"),
     );
   }
 
@@ -116,15 +116,15 @@ class DiscordRPC {
               largeImage: imageUrl,
               largeText: rpcShowTitle ? chapter.manga.value!.name : "-----",
               smallImage: "app-icon",
-              smallText: "Mangayomi",
+              smallText: "Flower Power",
             )
-          : const RPCAssets(largeImage: "app-icon", largeText: "Mangayomi"),
+          : const RPCAssets(largeImage: "app-icon", largeText: "Flower Power"),
     );
   }
 
   Future<void> showLargeImage() async {
     await updateActivity(
-      assets: const RPCAssets(largeImage: "app-icon", largeText: "Mangayomi"),
+      assets: const RPCAssets(largeImage: "app-icon", largeText: "Flower Power"),
     );
   }
 
@@ -134,7 +134,7 @@ class DiscordRPC {
         largeImage: largeImage,
         largeText: largeText,
         smallImage: "app-icon",
-        smallText: "Mangayomi",
+        smallText: "Flower Power",
       ),
     );
   }

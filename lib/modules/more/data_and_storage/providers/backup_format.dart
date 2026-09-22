@@ -17,12 +17,12 @@ import 'package:flower_power/repositories/manga_repository.dart';
 import 'package:flower_power/repositories/source_repository.dart';
 import 'package:protobuf/protobuf.dart';
 
-enum BackupType { unknown, mangayomi, mihon, aniyomi, kotatsu, neko }
+enum BackupType { unknown, flower_power, mihon, aniyomi, kotatsu, neko }
 
 BackupType checkBackupType(String path, Archive archive) {
-  if (path.toLowerCase().contains("mangayomi") &&
+  if (path.toLowerCase().contains("flower_power") &&
       (archive.files.firstOrNull?.name ?? "").endsWith(".backup.db")) {
-    return BackupType.mangayomi;
+    return BackupType.flower_power;
   } else if (path.toLowerCase().contains("kotatsu") &&
       archive.files.where((f) {
             switch (f.name) {
@@ -206,9 +206,9 @@ List<Source> installedSourcesFor(ItemType itemType) => sourceRepository
     .toList();
 
 /// Same preview shape as previewTachiBkImport, but for the native
-/// mangayomi backup format - already-decoded (and, for encrypted backups,
+/// flower_power backup format - already-decoded (and, for encrypted backups,
 /// already-decrypted) JSON rather than a path to re-read from disk.
-TachiBkImportPreview previewMangayomiBackup(Map<String, dynamic> backup) {
+TachiBkImportPreview previewFlower PowerBackup(Map<String, dynamic> backup) {
   final mangaList = (backup["manga"] as List?)
       ?.map((e) => Manga.fromJson(e)..itemType = convertToItemType(e))
       .toList();

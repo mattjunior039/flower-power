@@ -91,7 +91,7 @@ class _PlayerAdvancedScreenState extends ConsumerState<PlayerAdvancedScreen> {
                   ElevatedButton(
                     onPressed: () async {
                       final bytes = await rootBundle.load(
-                        "assets/mangayomi_mpv.zip",
+                        "assets/flower_power_mpv.zip",
                       );
                       final archive = ZipDecoder().decodeBytes(
                         bytes.buffer.asUint8List(),

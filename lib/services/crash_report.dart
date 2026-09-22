@@ -232,10 +232,10 @@ CrashReportScope crashReportScope(CrashReport report) {
   return CrashReportScope.app;
 }
 
-/// Whether this report belongs in Mangayomi's issue tracker.
+/// Whether this report belongs in Flower Power's issue tracker.
 ///
 /// Network/image failures need retry or source-specific help, while extension
-/// failures belong to the extension. Offering either a Mangayomi bug button
+/// failures belong to the extension. Offering either a Flower Power bug button
 /// creates reports that cannot lead to an app fix.
 bool isReportableFailure(CrashReport report) =>
     crashReportScope(report) == CrashReportScope.app;

@@ -98,7 +98,7 @@ class NativeCrashHandler {
     try {
       return DynamicLibrary.process()
           .lookupFunction<_InstallNative, _InstallDart>(
-            'mangayomi_install_crash_handler',
+            'flower_power_install_crash_handler',
           );
     } catch (_) {
       return null;
@@ -109,7 +109,7 @@ class NativeCrashHandler {
     try {
       return DynamicLibrary.process()
           .lookupFunction<_ContextNative, _ContextDart>(
-            'mangayomi_set_crash_context',
+            'flower_power_set_crash_context',
           );
     } catch (_) {
       return null;

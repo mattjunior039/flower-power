@@ -299,8 +299,8 @@ class _CreateExtensionState extends State<CreateExtension> {
                           }
                           final id =
                               _sourceCodeLanguage == SourceCodeLanguage.dart
-                              ? 'mangayomi-$_lang.$_name'.hashCode
-                              : 'mangayomi-js-$_lang.$_name'.hashCode;
+                              ? 'flower_power-$_lang.$_name'.hashCode
+                              : 'flower_power-js-$_lang.$_name'.hashCode;
                           final checkIfExist = sourceRepository.getById(id);
                           if (checkIfExist == null) {
                             Source source = Source(
@@ -466,7 +466,7 @@ TestSource main(MSource source) {
 
 String _jsSample(Source source) =>
     '''
-const mangayomiSources = [{
+const flower_powerSources = [{
     "name": "${source.name}",
     "lang": "${source.lang}",
     "baseUrl": "${source.baseUrl}",

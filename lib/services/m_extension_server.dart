@@ -111,7 +111,7 @@ class MExtensionServerPlatform {
             .get(Uri.parse("$baseUrl/capabilities"))
             .timeout(const Duration(milliseconds: 500));
         if (res.statusCode == 200 &&
-            res.body.contains('"mangayomiMihonBridge"')) {
+            res.body.contains('"flower_powerMihonBridge"')) {
           return true;
         }
       } catch (_) {}

@@ -47,7 +47,7 @@ Future<List<ImdbEpisode>?> fetchImdbEpisodes(String imdbId) async {
 Future<List<ImdbSubtitle>?> fetchImdbSubtitles(String imdbId) async {
   final http = MClient.init(reqcopyWith: {'useDartHttpClient': true});
   try {
-    final url = "https://wyzie.mangayomi.workers.dev/search?id=$imdbId";
+    final url = "https://wyzie.flower_power.workers.dev/search?id=$imdbId";
     final res = await http.get(
       Uri.parse(url),
       headers: {
