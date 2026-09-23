@@ -23,6 +23,7 @@ import 'package:flower_power/utils/extensions/build_context_extensions.dart';
 import 'package:flower_power/utils/extensions/manga_extensions.dart';
 import 'package:flower_power/utils/extensions/string_extensions.dart';
 import 'package:flower_power/utils/global_style.dart';
+import 'package:flower_power/modules/manga/detail/providers/state_providers.dart';
 import 'package:flower_power/utils/headers.dart';
 import 'package:flower_power/utils/utils.dart';
 
@@ -295,9 +296,7 @@ class _MangaInfoHeaderState extends ConsumerState<MangaInfoHeader> {
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
-                            mainAxisAlignment: widget.isLocalArchive
-                                ? MainAxisAlignment.spaceBetween
-                                : MainAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Padding(
                                 padding: const EdgeInsets.symmetric(
@@ -341,7 +340,20 @@ class _MangaInfoHeaderState extends ConsumerState<MangaInfoHeader> {
                                   ],
                                 ),
                               ),
-                              if (widget.isLocalArchive)
+                              Row(
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      final sortState = ref.read(sortChapterStateProvider(mangaId: widget.manga.id!));
+                                      ref.read(sortChapterStateProvider(mangaId: widget.manga.id!).notifier).set(sortState.index!);
+                                    },
+                                    icon: Icon(
+                                      ref.watch(sortChapterStateProvider(mangaId: widget.manga.id!)).reverse! 
+                                          ? Icons.arrow_downward 
+                                          : Icons.arrow_upward,
+                                    ),
+                                  ),
+                                  if (widget.isLocalArchive)
                                 ElevatedButton.icon(
                                   style: ElevatedButton.styleFrom(
                                     padding: const EdgeInsets.all(5),
@@ -385,6 +397,8 @@ class _MangaInfoHeaderState extends ConsumerState<MangaInfoHeader> {
                                     }
                                   },
                                 ),
+                                ],
+                              ),
                             ],
                           ),
                         ),

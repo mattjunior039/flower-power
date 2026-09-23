@@ -237,10 +237,7 @@ class _MangaDetailViewState extends ConsumerState<MangaDetailView>
                                           Padding(
                                             padding: const EdgeInsets.all(8.0),
                                             child: Row(
-                                              mainAxisAlignment: isLocalArchive
-                                                  ? MainAxisAlignment
-                                                        .spaceBetween
-                                                  : MainAxisAlignment.start,
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
                                                 Container(
                                                   height: chapters.isEmpty
@@ -310,7 +307,20 @@ class _MangaDetailViewState extends ConsumerState<MangaDetailView>
                                                     ),
                                                   ),
                                                 ),
-                                                if (isLocalArchive)
+                                                Row(
+                                                  children: [
+                                                    IconButton(
+                                                      onPressed: () {
+                                                        final sortState = ref.read(sortChapterStateProvider(mangaId: widget.manga!.id!));
+                                                        ref.read(sortChapterStateProvider(mangaId: widget.manga!.id!).notifier).set(sortState.index!);
+                                                      },
+                                                      icon: Icon(
+                                                        ref.watch(sortChapterStateProvider(mangaId: widget.manga!.id!)).reverse! 
+                                                            ? Icons.arrow_downward 
+                                                            : Icons.arrow_upward,
+                                                      ),
+                                                    ),
+                                                    if (isLocalArchive)
                                                   ElevatedButton.icon(
                                                     style: ElevatedButton.styleFrom(
                                                       padding:
@@ -374,6 +384,8 @@ class _MangaDetailViewState extends ConsumerState<MangaDetailView>
                                                       }
                                                     },
                                                   ),
+                                                ],
+                                                ),
                                               ],
                                             ),
                                           ),

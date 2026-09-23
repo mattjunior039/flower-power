@@ -173,19 +173,6 @@ class AboutScreen extends ConsumerWidget {
                               child: FaIcon(FontAwesomeIcons.github),
                             ),
                           ),
-                          IconButton(
-                            onPressed: () {
-                              _launchInBrowser(
-                                Uri.parse(
-                                  'https://discord.com/invite/EjfBuYahsP',
-                                ),
-                              );
-                            },
-                            icon: const Padding(
-                              padding: EdgeInsets.only(right: 5),
-                              child: FaIcon(FontAwesomeIcons.discord),
-                            ),
-                          ),
                         ],
                       ),
                     ],

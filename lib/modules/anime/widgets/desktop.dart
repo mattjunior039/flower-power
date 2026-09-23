@@ -627,30 +627,64 @@ class _DesktopControllerWidgetState
                                 margin: const EdgeInsets.all(0),
                               ),
                               Expanded(
-                                child: Center(
-                                  child: Center(
-                                    child: TweenAnimationBuilder<double>(
-                                      tween: Tween<double>(
-                                        begin: 0.0,
-                                        end: buffering ? 1.0 : 0.0,
-                                      ),
-                                      duration: controlsTransitionDuration,
-                                      builder: (context, value, child) {
-                                        // Only mount the buffering indicator if the opacity is greater than 0.0.
-                                        // This has been done to prevent redundant resource usage in [CircularProgressIndicator].
-                                        if (value > 0.0) {
-                                          return Opacity(
-                                            opacity: value,
-                                            child: child!,
-                                          );
-                                        }
-                                        return const SizedBox.shrink();
-                                      },
-                                      child: const CircularProgressIndicator(
-                                        color: Color(0xFFFFFFFF),
+                                child: Stack(
+                                  children: [
+                                    Center(
+                                      child: TweenAnimationBuilder<double>(
+                                        tween: Tween<double>(
+                                          begin: 0.0,
+                                          end: buffering ? 1.0 : 0.0,
+                                        ),
+                                        duration: controlsTransitionDuration,
+                                        builder: (context, value, child) {
+                                          if (value > 0.0) {
+                                            return Opacity(
+                                              opacity: value,
+                                              child: child!,
+                                            );
+                                          }
+                                          return const SizedBox.shrink();
+                                        },
+                                        child: SizedBox(
+                                          width: (MediaQuery.of(context).size.width * 0.08).clamp(48.0, 100.0),
+                                          height: (MediaQuery.of(context).size.width * 0.08).clamp(48.0, 100.0),
+                                          child: const CircularProgressIndicator(
+                                            color: Color(0xFFFFFFFF),
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
+                                    if (!buffering && mount)
+                                      Center(
+                                        child: AnimatedOpacity(
+                                          duration: controlsTransitionDuration,
+                                          opacity: visible ? 1.0 : 0.0,
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              StreamBuilder<bool>(
+                                                stream: widget.videoController.player.stream.playing,
+                                                initialData: widget.videoController.player.state.playing,
+                                                builder: (context, snapshot) {
+                                                  final isPlaying = snapshot.data ?? true;
+                                                  return IconButton(
+                                                    iconSize: (MediaQuery.of(context).size.width * 0.08).clamp(48.0, 100.0),
+                                                    icon: Icon(
+                                                      isPlaying ? Icons.pause : Icons.play_arrow,
+                                                      color: Colors.white,
+                                                    ),
+                                                    onPressed: () {
+                                                      widget.videoController.player.playOrPause();
+                                                      onHover();
+                                                    },
+                                                  );
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                  ],
                                 ),
                               ),
                               Container(

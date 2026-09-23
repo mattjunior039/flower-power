@@ -5,24 +5,23 @@
 <h1 align="center"> Flower Power </h1>
 
 <div align="center">
-Flower Power is a beautifully designed, open-source application for reading comics, webtoons, and manga seamlessly across multiple platforms. Experience your favorite stories with a fresh, flower-themed aesthetic.
+Flower Power is a beautifully designed, open-source tool for parsing and rendering web media and local files across multiple platforms. Experience your favorite stories with a fresh, flower-themed aesthetic.
 </div>
 
 > [!WARNING]
-> **Disclaimer**: Flower Power does not host any content. The developer(s) of this application do not have any affiliation with the content providers that are freely available on the internet. This application is an independent fork of the original open-source project and is provided as-is, strictly as a reader utility.
+> **Disclaimer**: Flower Power is an offline media utility, local library manager, and generic web parser. It does not host, provide, or link to any digital media or pre-installed extensions. All content is provided by the user. The developers have no affiliation with any third-party content providers.
 
 ## Features
 
 <div align="left">
 
-Features include:
-* Reading webtoons, comics, novels, and more.
-* Local reading of content directly from your device.
+* Read locally imported .cbz, .epub, and .pdf files directly from your device.
+* Extensible architecture: load user-defined plugins to parse and render media from your preferred web sources.
 * A configurable reader with multiple viewers, reading directions, and custom settings.
 * Beautiful and immersive UI tailored for maximum reading comfort.
 * Categories to organize your personal library.
 * Light and dark themes.
-* Create backups locally to read offline or sync to your desired cloud service.
+* Create local backups to read offline or sync to your desired cloud service.
 
 </div>
 

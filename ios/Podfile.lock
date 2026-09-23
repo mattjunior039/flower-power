@@ -71,7 +71,7 @@ PODS:
     - InternalCollectionsUtilities (= 1.1.1)
   - url_launcher_ios (0.0.1):
     - Flutter
-  - volume_controller (0.0.1):
+  - volume_controller (3.7.0):
     - Flutter
   - wakelock_plus (0.0.1):
     - Flutter
@@ -190,9 +190,9 @@ SPEC CHECKSUMS:
   share_plus: 50da8cb520a8f0f65671c6c6a99b3617ed10a58a
   swift-collections: ba248ecaf44ef500b27d5cf94d304218c89892ff
   url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
-  volume_controller: 3657a1f65bedb98fa41ff7dc5793537919f31b12
-  wakelock_plus: e29112ab3ef0b318e58cfa5c32326458be66b556
+  volume_controller: b2f529b1dc3496fe900df1baef358aadce59a827
+  wakelock_plus: d4ca1e4e4bc9de42cb55d57b5bdc158af318e3c6
 
 PODFILE CHECKSUM: c6004dd61ab6b724c93a40f3706bf6adbdd5d4a0
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.17.0
