@@ -110,7 +110,7 @@ Future<UpdateInfo?> _fetchLatestRelease() async {
     final http = MClient.init(reqcopyWith: {'useDartHttpClient': true});
     final res = await http.get(
       Uri.parse(
-        'https://api.github.com/repos/kodjodevf/Flower Power/releases/latest',
+        'https://api.github.com/repos/mattjunior039/flower-power/releases/latest',
       ),
       headers: {'Accept': 'application/vnd.github.v3+json'},
     );
