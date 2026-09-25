@@ -75,3 +75,16 @@ flutter run
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+
+### iOS Installation (Sideloading)
+Because Flower Power is not listed on the App Store, you can easily sideload it onto your iPhone using a Mac.
+
+**Method 1: Xcode (Requires Mac)**
+1. Open the `ios/Runner.xcworkspace` file in Xcode.
+2. Go to **Xcode > Settings > Accounts** and add your Apple ID.
+3. Select the **Runner** project in the left sidebar, click the **Signing & Capabilities** tab, and select your Apple ID as the Team.
+4. Plug in your iPhone, select it from the device dropdown at the top, and press the **Play** button to install.
+*(Note: With a free developer account, the app will expire after 7 days. You will need to plug your phone back in and hit Play again to refresh it.)*
+
+**Method 2: AltStore / Sideloadly**
+Compile the app into an `.ipa` file (`flutter build ipa`) and use tools like AltStore or Sideloadly to wirelessly install and automatically refresh the app on your phone every 7 days.
