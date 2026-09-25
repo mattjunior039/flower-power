@@ -170,7 +170,7 @@ class HideItemsState extends _$HideItemsState {
 class MergeLibraryNavMobileState extends _$MergeLibraryNavMobileState {
   @override
   bool build() {
-    return settingsRepository.current.mergeLibraryNavMobile ?? false;
+    return settingsRepository.current.mergeLibraryNavMobile ?? true;
   }
 
   void set(bool value) {

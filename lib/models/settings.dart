@@ -590,7 +590,7 @@ class Settings {
     this.extensionServerPath = "",
     this.autoStartExtensionServerOnLaunch = false,
     this.lastTrackerLibraryLocation,
-    this.mergeLibraryNavMobile = false,
+    this.mergeLibraryNavMobile = true,
     this.showNavDoubleTapTooltip = true,
     this.enableDiscordRpc = true,
     this.hideDiscordRpcInIncognito = true,
