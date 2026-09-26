@@ -3,92 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flower Power | v1.0.7</title>
+    <title>Flower Power</title>
     <style>
         :root {
             --bg: #FDFBFB;
-            --text: #111111;
-            --accent: #FF2E7E; 
-            --border: rgba(17, 17, 17, 0.12);
+            --text: #2A2A2A;
+            --accent: #FF2E7E; /* Pink Accent */
+            --border: #EAEAEA;
         }
-        
+
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg);
             color: var(--text);
-            line-height: 1.4;
+            line-height: 1.6;
             -webkit-font-smoothing: antialiased;
         }
 
         .grid-container {
             display: grid;
-            grid-template-columns: 4fr 6fr;
+            grid-template-columns: 1fr 1.2fr;
             min-height: 100vh;
         }
 
-        /* Left column - Sticky Header area */
+        /* Left Header Section */
         .header-section {
             padding: 6rem 4rem;
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            position: sticky;
+            top: 0;
+            height: 100vh;
         }
 
         .logo-wrapper {
-            margin-bottom: 4rem;
-        }
-
-        h1 {
-            font-weight: 700;
-            font-size: clamp(3rem, 5vw, 6rem);
-            letter-spacing: -0.04em;
-            line-height: 1;
             margin-bottom: 2rem;
         }
 
+        h1 {
+            font-weight: 800;
+            font-size: 4rem;
+            line-height: 0.9;
+            letter-spacing: -0.04em;
+            margin-bottom: 1.5rem;
+        }
+
         .description {
-            font-weight: 300;
             font-size: 1.25rem;
+            font-weight: 400;
+            color: #666;
             max-width: 400px;
-            color: #4A4A4A;
         }
 
         .version-tag {
-            font-size: 0.85rem; 
-            font-weight: 700; 
-            text-transform: uppercase; 
+            font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
+            font-size: 0.85rem;
             letter-spacing: 0.05em;
+            color: var(--accent);
         }
 
-        /* Right column - Content */
+        /* Right Content Section */
         .content-section {
             padding: 6rem 4rem;
+            background: #fff;
         }
 
         .download-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 6rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 4rem;
         }
 
         .btn {
-            display: block;
-            padding: 1.5rem 2rem;
+            display: inline-block;
+            padding: 1.2rem;
             border: 1px solid var(--border);
+            background: transparent;
             color: var(--text);
             text-decoration: none;
-            font-weight: 700;
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-align: center;
             transition: all 0.2s ease;
         }
 
@@ -224,9 +228,38 @@
                 <a href="https://github.com/mattjunior039/flower-power/releases/download/v1.0.7/Flower_Power-v1.0.7-windows.exe" class="btn">
                     ↓ Windows Executable
                 </a>
+                <a href="https://github.com/mattjunior039/flower-power/releases/download/v1.0.7/Flower_Power-v1.0.7-ios.ipa" class="btn">
+                    ↓ iOS Package (.ipa)
+                </a>
             </div>
 
             <div class="instructions-wrapper">
+                <section class="os-section">
+                    <h2>iOS Sideloading (macOS)</h2>
+                    <ol>
+                        <li>Download the iOS Package (.ipa) to your Mac.</li>
+                        <li>Install <strong>Sideloadly</strong> or <strong>AltServer</strong> for macOS.</li>
+                        <li>Connect your iPhone to your Mac via USB and trust the computer.</li>
+                        <li>Drag the .ipa file into the sideloading tool and enter your Apple ID to install.</li>
+                    </ol>
+                    <div class="security-note">
+                        <strong>Security Notice:</strong> After installation, your iPhone will refuse to open the app. Go to <strong>Settings &gt; General &gt; VPN &amp; Device Management</strong> and "Trust" your developer email. If using a free Apple ID, the app must be refreshed over Wi-Fi every 7 days.
+                    </div>
+                </section>
+
+                <section class="os-section">
+                    <h2>iOS Sideloading (Windows)</h2>
+                    <ol>
+                        <li>Download the iOS Package (.ipa) to your PC.</li>
+                        <li>Install <strong>iTunes</strong> and <strong>iCloud</strong> for Windows (downloaded directly from Apple, not the Microsoft Store).</li>
+                        <li>Install <strong>Sideloadly</strong> or <strong>AltServer</strong> for Windows.</li>
+                        <li>Connect your iPhone via USB, open your sideloading tool, and install the .ipa using your Apple ID.</li>
+                    </ol>
+                    <div class="security-note">
+                        <strong>Security Notice:</strong> After installation, your iPhone will refuse to open the app. Go to <strong>Settings &gt; General &gt; VPN &amp; Device Management</strong> and "Trust" your developer email. Keep the Windows PC running occasionally to allow automatic 7-day Wi-Fi refreshes.
+                    </div>
+                </section>
+
                 <section class="os-section">
                     <h2>macOS Deployment</h2>
                     <ol>
