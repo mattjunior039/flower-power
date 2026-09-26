@@ -30,7 +30,7 @@ class DiscordRPC {
     buttons: [
       const RPCButton(
         label: "Get FlowerPower",
-        url: "https://github.com/kodjodevf/flower_power",
+        url: "https://github.com/mattjunior039/flower-power",
       ),
       const RPCButton(
         label: "Join us",

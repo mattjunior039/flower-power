@@ -30,7 +30,7 @@ class IncognitoModeWidget extends ConsumerWidget {
       icon: CupertinoIcons.eyeglasses,
       subtitle: l10n!.incognito_mode_description,
       title: l10n.incognito_mode,
-      trailing: Switch(
+      trailing: Switch.adaptive(
         value: incognitoMode,
         onChanged: (value) {
           ref.read(incognitoModeStateProvider.notifier).setIncognitoMode(value);

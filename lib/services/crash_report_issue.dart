@@ -6,7 +6,7 @@ import 'package:flower_power/services/crash_report.dart';
 /// knows filled in. Nothing is sent by opening it: the reader lands on a
 /// GitHub page holding a draft, sees every word of it, and decides whether to
 /// press submit. That is the whole reason this is a link and not a POST.
-const _repo = 'kodjodevf/flower_power';
+const _repo = 'mattjunior039/flower-power';
 const _template = 'report_issue.yml';
 
 /// GitHub stops honouring prefilled values on very long URLs, so the body

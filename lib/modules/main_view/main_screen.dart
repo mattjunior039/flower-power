@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flower_power/utils/constant.dart';
 import 'package:flower_power/utils/platform_utils.dart';
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -1109,10 +1111,37 @@ class _MobileBottomNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final height = _getBottomNavigationHeight(isLongPressed, location);
+    
+    if (Platform.isIOS) {
+      if (height == 0) return const SizedBox.shrink();
+      
+      final destinations = buildNavigationWidgetsMobile(ref, dest, context);
+      final items = destinations.map((d) {
+        if (d is NavigationDestination) {
+          return BottomNavigationBarItem(
+            icon: d.icon,
+            activeIcon: d.selectedIcon,
+            label: d.label,
+          );
+        }
+        return const BottomNavigationBarItem(icon: SizedBox.shrink(), label: '');
+      }).toList();
+
+      return CupertinoTabBar(
+        items: items,
+        currentIndex: currentIndex,
+        activeColor: Theme.of(context).colorScheme.primary,
+        onTap: (newIndex) {
+          onDestinationSelected(dest[newIndex]);
+        },
+      );
+    }
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 0),
       width: context.width(1),
-      height: _getBottomNavigationHeight(isLongPressed, location),
+      height: height,
       child: NavigationBarTheme(
         data: NavigationBarThemeData(
           labelTextStyle: const WidgetStatePropertyAll(

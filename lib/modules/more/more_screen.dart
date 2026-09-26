@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,6 +11,7 @@ import 'package:flower_power/providers/l10n_providers.dart';
 import 'package:flower_power/utils/constant.dart';
 import 'package:flower_power/utils/platform_utils.dart';
 import 'package:flower_power/models/manga.dart';
+import 'package:flower_power/l10n/generated/app_localizations.dart';
 
 import 'package:flower_power/modules/more/about/providers/get_package_info.dart';
 
@@ -24,6 +27,127 @@ class MoreScreenState extends ConsumerState<MoreScreen> {
   Widget build(BuildContext context) {
     final l10n = l10nLocalizations(context)!;
     final hiddenItems = ref.watch(hideItemsStateProvider);
+
+    if (Platform.isIOS && !isTv) {
+      return _buildIos(context, l10n, hiddenItems);
+    }
+    return _buildMaterial(context, l10n, hiddenItems);
+  }
+
+  Widget _buildIos(BuildContext context, AppLocalizations l10n, List<String> hiddenItems) {
+    return Scaffold(
+      body: CustomScrollView(
+        slivers: [
+          CupertinoSliverNavigationBar(
+            largeTitle: Text(l10n.more),
+          ),
+          SliverToBoxAdapter(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  child: Image.asset(
+                    appIconAssets[2],
+                    fit: BoxFit.cover,
+                    height: 100,
+                  ),
+                ),
+                CupertinoListSection.insetGrouped(
+                  hasLeading: true,
+                  children: const [
+                    DownloadedOnlyWidget(),
+                    IncognitoModeWidget(),
+                  ],
+                ),
+                CupertinoListSection.insetGrouped(
+                  hasLeading: true,
+                  children: [
+                    if (hiddenItems.contains("/history"))
+                      ListTileWidget(
+                        onTap: () {
+                          context.push('/history');
+                        },
+                        icon: Icons.history,
+                        title: l10n.history,
+                      ),
+                    if (!isTv)
+                      ListTileWidget(
+                        onTap: () {
+                          context.push('/downloadQueue');
+                        },
+                        icon: Icons.download_outlined,
+                        title: l10n.download_queue,
+                      ),
+                    ListTileWidget(
+                      onTap: () {
+                        context.push('/categories', extra: (false, 0));
+                      },
+                      icon: Icons.label_outline_rounded,
+                      title: l10n.categories,
+                    ),
+                    ListTileWidget(
+                      onTap: () {
+                        context.push('/statistics');
+                      },
+                      icon: Icons.query_stats_outlined,
+                      title: l10n.statistics,
+                    ),
+                    ListTileWidget(
+                      onTap: () {
+                        context.push('/calendarScreen');
+                      },
+                      icon: Icons.calendar_month_outlined,
+                      title: l10n.calendar,
+                    ),
+                    ListTileWidget(
+                      onTap: () {
+                        context.push('/dataAndStorage');
+                      },
+                      icon: Icons.storage,
+                      title: l10n.data_and_storage,
+                    ),
+                  ],
+                ),
+                CupertinoListSection.insetGrouped(
+                  hasLeading: true,
+                  children: [
+                    ListTileWidget(
+                      onTap: () {
+                        context.push('/settings');
+                      },
+                      icon: Icons.settings_outlined,
+                      title: l10n.settings,
+                    ),
+                    ListTileWidget(
+                      onTap: () {
+                        context.push('/about');
+                      },
+                      icon: Icons.info_outline,
+                      title: l10n.about,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                ref.watch(getPackageInfoProvider).when(
+                  data: (data) => Padding(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: Text(
+                      'v${data.version}',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                    ),
+                  ),
+                  error: (_, __) => const SizedBox.shrink(),
+                  loading: () => const SizedBox.shrink(),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMaterial(BuildContext context, AppLocalizations l10n, List<String> hiddenItems) {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -39,16 +163,6 @@ class MoreScreenState extends ConsumerState<MoreScreen> {
                 ),
               ),
               const Divider(),
-              // ListTile(
-              //   onTap: () {},
-              //   leading: const SizedBox(height: 40, child: Icon(Icons.cloud_off)),
-              //   subtitle: const Text('Filter all entries in your library'),
-              //   title: const Text('Donloaded only'),
-              //   trailing: Switch(
-              //     value: false,
-              //     onChanged: (value) {},
-              //   ),
-              // ),
               const DownloadedOnlyWidget(),
               const IncognitoModeWidget(),
               const Divider(),
@@ -60,8 +174,6 @@ class MoreScreenState extends ConsumerState<MoreScreen> {
                   icon: Icons.history,
                   title: l10n.history,
                 ),
-              // Downloads are hidden on TV: no offline use case, and the download
-              // buttons are hidden there too, so a queue entry would just dangle.
               if (!isTv)
                 ListTileWidget(
                   onTap: () {
@@ -70,17 +182,6 @@ class MoreScreenState extends ConsumerState<MoreScreen> {
                   icon: Icons.download_outlined,
                   title: l10n.download_queue,
                 ),
-              // Mass migration is otherwise only reachable from a manga's
-              // overflow menu, which the TV detail view does not have. It is a
-              // library-wide tool anyway: it lists every source in the library,
-              // and only uses a manga to float that source to the top. Seeded
-              // with anime because the TV build is anime-first; the per-source
-              // shortcut on the TV detail view covers the other libraries.
-              // Mass migration is otherwise only reachable from a manga's overflow
-              // menu, which the TV anime detail lacks. It is a library-wide tool
-              // (lists every source in the library), seeded with anime here since
-              // the TV build is anime-first; the TV detail's per-source shortcut
-              // covers the other libraries.
               if (isTv)
                 ListTileWidget(
                   onTap: () => context.push(
@@ -133,11 +234,6 @@ class MoreScreenState extends ConsumerState<MoreScreen> {
                 icon: Icons.info_outline,
                 title: l10n.about,
               ),
-              // ListTileWidget(
-              //   onTap: () {},
-              //   icon: Icons.help_outline,
-              //   title: l10n.help,
-              // ),
               const SizedBox(height: 20),
               ref
                   .watch(getPackageInfoProvider)

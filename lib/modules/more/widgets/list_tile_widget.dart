@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flower_power/modules/widgets/tv_row_button.dart';
 import 'package:flower_power/utils/extensions/build_context_extensions.dart';
@@ -26,6 +28,20 @@ class ListTileWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (Platform.isIOS && !isTv) {
+      return CupertinoListTile(
+        leading: Icon(icon, color: context.primaryColor),
+        title: Text(title),
+        subtitle: subtitle != null
+            ? Text(
+                subtitle!,
+                style: TextStyle(fontSize: 11, color: context.secondaryColor),
+              )
+            : null,
+        trailing: trailing ?? const CupertinoListTileChevron(),
+        onTap: onTap,
+      );
+    }
     // On TV, a plain menu row gets the same lit band and accent focus as the
     // Browse / Updates / History lists, so settings and the other menus read
     // like the rest of the TV UI. Rows with an interactive trailing (a toggle)
@@ -61,12 +77,6 @@ class ListTileWidget extends StatelessWidget {
     return ListTile(
       autofocus: autofocus,
       onTap: onTap,
-      // subtitle: subtitle != null
-      //     ? Text(
-      //         subtitle!,
-      //         style: TextStyle(fontSize: 11, color: context.secondaryColor),
-      //       )
-      //     : null,
       leading: SizedBox(
         height: 40,
         child: Icon(icon, color: context.primaryColor),

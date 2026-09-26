@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flower_power/models/manga.dart';
@@ -129,6 +131,14 @@ abstract class BaseLibraryTabScreenState<T extends ConsumerStatefulWidget>
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
+        flexibleSpace: Platform.isIOS
+            ? ClipRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                  child: Container(color: Colors.transparent),
+                ),
+              )
+            : null,
         title: isSearch
             ? null
             : Text(title, style: TextStyle(color: Theme.of(context).hintColor)),

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -42,6 +43,18 @@ ThemeData _tvFocus(ThemeData theme) {
   );
 }
 
+ThemeData _applyIosThemeSettings(ThemeData theme) {
+  if (Platform.isIOS) {
+    return theme.copyWith(
+      appBarTheme: theme.appBarTheme.copyWith(
+        scrolledUnderElevation: 0,
+        backgroundColor: Colors.transparent,
+      ),
+    );
+  }
+  return theme;
+}
+
 /// Provides the light theme for the app, recomputed only when
 /// flex scheme colors, blend level, or font family change.
 final lightThemeProvider = Provider<ThemeData>((ref) {
@@ -49,9 +62,10 @@ final lightThemeProvider = Provider<ThemeData>((ref) {
   final blendLevel = ref.watch(blendLevelStateProvider).toInt();
   final fontFamily = ref.watch(appFontFamilyProvider.select((t) => t.$2));
 
-  return _tvFocus(
-    FlexThemeData.light(
-      colors: colors,
+  return _applyIosThemeSettings(
+    _tvFocus(
+      FlexThemeData.light(
+        colors: colors,
       surfaceMode: FlexSurfaceMode.highScaffoldLevelSurface,
       blendLevel: blendLevel,
       appBarOpacity: 0.00,
@@ -79,7 +93,7 @@ final lightThemeProvider = Provider<ThemeData>((ref) {
       scaffoldBackground: const Color(0xFFFDFBFB),
       fontFamily: fontFamily,
     ),
-  );
+  ));
 });
 
 /// Provides the dark theme for the app, recomputed only when
@@ -90,9 +104,10 @@ final darkThemeProvider = Provider<ThemeData>((ref) {
   final fontFamily = ref.watch(appFontFamilyProvider.select((t) => t.$2));
   final pureBlack = ref.watch(pureBlackDarkModeStateProvider);
 
-  return _tvFocus(
-    FlexThemeData.dark(
-      colors: colors,
+  return _applyIosThemeSettings(
+    _tvFocus(
+      FlexThemeData.dark(
+        colors: colors,
       surfaceMode: FlexSurfaceMode.level,
       // Pure black means pure black. The slider that sets this is hidden while
       // the toggle is on, but hiding a control does not stop it applying, so a
@@ -122,5 +137,5 @@ final darkThemeProvider = Provider<ThemeData>((ref) {
       
       fontFamily: fontFamily,
     ),
-  );
+  ));
 });

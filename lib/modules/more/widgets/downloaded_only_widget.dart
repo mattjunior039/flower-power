@@ -18,7 +18,7 @@ class DownloadedOnlyWidget extends ConsumerWidget {
       icon: Icons.cloud_off_outlined,
       subtitle: l10n!.downloaded_only_description,
       title: l10n.downloaded_only,
-      trailing: Switch(
+      trailing: Switch.adaptive(
         value: downloadedOnly,
         onChanged: (value) => ref
             .read(downloadedOnlyStateProvider.notifier)

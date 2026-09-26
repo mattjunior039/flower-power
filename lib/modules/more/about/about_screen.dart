@@ -56,7 +56,7 @@ class AboutScreen extends ConsumerWidget {
                           style: const TextStyle(fontSize: 12),
                         ),
                       ),
-                      SwitchListTile(
+                      SwitchListTile.adaptive(
                         title: Text(l10n.check_for_app_updates),
                         value: checkForUpdates,
                         onChanged: (value) {
@@ -104,7 +104,7 @@ class AboutScreen extends ConsumerWidget {
                             ? null
                             : Text('${CrashReports.reports.length}'),
                       ),
-                      SwitchListTile(
+                      SwitchListTile.adaptive(
                         title: Text(l10n.logs_on),
                         value: enableLogs,
                         onChanged: (value) async {
@@ -145,18 +145,6 @@ class AboutScreen extends ConsumerWidget {
                           },
                           title: Text(l10n.share_app_logs),
                         ),
-                      // ListTile(
-                      //   onTap: () {},
-                      //   title: const Text("What's news"),
-                      // ),
-                      // ListTile(
-                      //   onTap: () {},
-                      //   title: const Text('Help translation'),
-                      // ),
-                      // ListTile(
-                      //   onTap: () {},
-                      //   title: const Text('Privacy policy'),
-                      // ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -164,7 +152,7 @@ class AboutScreen extends ConsumerWidget {
                             onPressed: () {
                               _launchInBrowser(
                                 Uri.parse(
-                                  'https://github.com/kodjodevf/flower_power',
+                                  'https://github.com/mattjunior039/flower-power',
                                 ),
                               );
                             },
