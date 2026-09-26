@@ -42,9 +42,11 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 class LibraryScreen extends ConsumerStatefulWidget {
   final ItemType itemType;
   final String? presetInput;
+  final PreferredSizeWidget? topTabBar;
   const LibraryScreen({
     required this.itemType,
     required this.presetInput,
+    this.topTabBar,
     super.key,
   });
 
@@ -330,6 +332,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen>
                   onIgnoreFiltersChanged: (val) =>
                       setState(() => _ignoreFiltersOnSearch = val),
                   vsync: this,
+                  bottom: widget.topTabBar,
                 ),
                 body: bodyForCategory(),
               );
@@ -421,6 +424,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen>
           onIgnoreFiltersChanged: (val) =>
               setState(() => _ignoreFiltersOnSearch = val),
           vsync: this,
+          bottom: widget.topTabBar,
         ),
         // A single category doesn't need the tab bar + TabBarView. The
         // TabBarView (a PageView) blocks directional d-pad focus from crossing

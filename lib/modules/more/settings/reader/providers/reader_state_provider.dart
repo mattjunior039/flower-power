@@ -123,9 +123,7 @@ class FullScreenReaderState extends _$FullScreenReaderState {
 @riverpod
 class NavigationOrderState extends _$NavigationOrderState {
   final items = [
-    '/MangaLibrary',
-    '/AnimeLibrary',
-    '/NovelLibrary',
+    '/library',
     '/updates',
     '/history',
     '/browse',
@@ -135,9 +133,13 @@ class NavigationOrderState extends _$NavigationOrderState {
 
   @override
   List<String> build() {
-    return _checkMissingItems(
-      settingsRepository.current.navigationOrder?.toList() ?? [],
-    );
+    var order = settingsRepository.current.navigationOrder?.toList() ?? [];
+    if (order.contains('/MangaLibrary') || order.contains('/AnimeLibrary') || order.contains('/NovelLibrary')) {
+      order = order.where((e) => e != '/MangaLibrary' && e != '/AnimeLibrary' && e != '/NovelLibrary').toList();
+      if (!order.contains('/library')) order.insert(0, '/library');
+      settingsRepository.update((s) => s.navigationOrder = order);
+    }
+    return _checkMissingItems(order);
   }
 
   List<String> _checkMissingItems(List<String> navigationOrder) {

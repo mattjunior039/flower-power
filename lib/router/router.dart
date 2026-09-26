@@ -47,6 +47,7 @@ import 'package:flower_power/modules/browse/extension/extension_lang.dart';
 import 'package:flower_power/modules/browse/global_search/global_search_screen.dart';
 import 'package:flower_power/modules/main_view/main_screen.dart';
 import 'package:flower_power/modules/history/history_screen.dart';
+import 'package:flower_power/modules/library/global_library_screen.dart';
 import 'package:flower_power/modules/library/library_screen.dart';
 import 'package:flower_power/modules/manga/detail/manga_detail_main.dart';
 import 'package:flower_power/modules/manga/home/manga_home_screen.dart';
@@ -148,23 +149,8 @@ class RouterNotifier extends ChangeNotifier {
       branches: [
         _branch(
           _genericRoute<String?>(
-            name: "MangaLibrary",
-            builder: (id) =>
-                LibraryScreen(itemType: ItemType.manga, presetInput: id),
-          ),
-        ),
-        _branch(
-          _genericRoute<String?>(
-            name: "AnimeLibrary",
-            builder: (id) =>
-                LibraryScreen(itemType: ItemType.anime, presetInput: id),
-          ),
-        ),
-        _branch(
-          _genericRoute<String?>(
-            name: "NovelLibrary",
-            builder: (id) =>
-                LibraryScreen(itemType: ItemType.novel, presetInput: id),
+            name: "library",
+            builder: (id) => const GlobalLibraryScreen(),
           ),
         ),
         _branch(

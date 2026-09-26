@@ -39,6 +39,7 @@ class LibraryAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final VoidCallback onSearchClear;
   final ValueChanged<bool> onIgnoreFiltersChanged;
   final TickerProvider vsync;
+  final PreferredSizeWidget? bottom;
 
   const LibraryAppBar({
     super.key,
@@ -57,10 +58,11 @@ class LibraryAppBar extends ConsumerWidget implements PreferredSizeWidget {
     required this.onSearchClear,
     required this.onIgnoreFiltersChanged,
     required this.vsync,
+    this.bottom,
   });
 
   @override
-  Size get preferredSize => Size.fromHeight(AppBar().preferredSize.height);
+  Size get preferredSize => Size.fromHeight(AppBar().preferredSize.height + (bottom?.preferredSize.height ?? 0));
 
   /// The library menu actions, shared by the popup off-TV and the centred TV
   /// menu.
@@ -278,6 +280,7 @@ class LibraryAppBar extends ConsumerWidget implements PreferredSizeWidget {
             onSelected: (value) => _onLibraryMenu(context, ref, value, manga),
           ),
       ],
+      bottom: bottom,
     );
   }
 }

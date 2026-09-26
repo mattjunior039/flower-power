@@ -53,6 +53,7 @@ ItemType? _itemTypeForNavDest(String dest) => switch (dest) {
   "/MangaLibrary" => ItemType.manga,
   "/AnimeLibrary" => ItemType.anime,
   "/NovelLibrary" => ItemType.novel,
+  "/library" => null,
   _ => null,
 };
 
@@ -497,6 +498,17 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       null,
     );
 
+    if (dest.contains("/library")) {
+      destinations[dest.indexOf("/library")] = NavigationRailDestination(
+        padding: isTv ? const EdgeInsets.symmetric(vertical: 6) : null,
+        selectedIcon: const Icon(Icons.collections_bookmark),
+        icon: const Icon(Icons.collections_bookmark_outlined),
+        label: Padding(
+          padding: const EdgeInsets.only(top: 5),
+          child: Text(l10n.library),
+        ),
+      );
+    }
     if (dest.contains("/MangaLibrary")) {
       destinations[dest.indexOf("/MangaLibrary")] = NavigationRailDestination(
         // Even breathing room between tabs on TV; null off-TV.
@@ -667,6 +679,13 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     }
     if (dest.contains("_enableLibSwitch")) {
       destinations[dest.indexOf("_enableLibSwitch")] = NavigationDestination(
+        selectedIcon: const Icon(Icons.collections_bookmark),
+        icon: const Icon(Icons.collections_bookmark_outlined),
+        label: l10n.library,
+      );
+    }
+    if (dest.contains("/library")) {
+      destinations[dest.indexOf("/library")] = NavigationDestination(
         selectedIcon: const Icon(Icons.collections_bookmark),
         icon: const Icon(Icons.collections_bookmark_outlined),
         label: l10n.library,
