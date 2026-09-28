@@ -1092,6 +1092,7 @@ class _TabletLayoutState extends State<_TabletLayout> {
     if (isLongPressed) return 0;
 
     const validLocations = {
+      '/library',
       '/MangaLibrary',
       '/AnimeLibrary',
       '/NovelLibrary',
@@ -1189,6 +1190,7 @@ class _MobileBottomNavigation extends StatelessWidget {
     if (isLongPressed) return 0;
 
     const validLocations = {
+      '/library',
       '/MangaLibrary',
       '/AnimeLibrary',
       '/NovelLibrary',
