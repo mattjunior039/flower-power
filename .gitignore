@@ -58,3 +58,12 @@ isar.dll
 libisar.dll
 # Widget Preview related
 .widget_preview/
+scratch/
+*.py
+*.txt
+*.js
+*.jar
+*.java
+*.sh
+*.ipa
+*.dmg

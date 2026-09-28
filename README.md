@@ -76,3 +76,11 @@ flutter run
     See the License for the specific language governing permissions and
     limitations under the License.
 
+
+## Changelog
+
+**v1.0.8**
+- **iOS Parsing Engine Upgrade:** Major overhaul to the embedded Android proxy server for iOS.
+  - Implemented Brotli decompression to successfully parse Cloudflare-protected HTML (fixes Asura Scans and MangaGo page loading).
+  - Fixed an architecture issue where the BouncyCastle cryptography library was skipped during iOS startup. The `AES/CBC/ZEROBYTEPADDING` cipher is now correctly registered, fixing decryption errors in sources like MangaGo.
+  - Re-compiled the embedded Java proxy server to fully support these networking features out-of-the-box.

@@ -220,7 +220,7 @@ class MihonExtensionService implements ExtensionService {
       "lang": source.lang,
       "sourceId": source.id?.toString(),
     });
-    print("Mihon request body: " + (reqBody.length > 200 ? reqBody.substring(0, 200) + "..." : reqBody));
+    print("Mihon request body: ${reqBody.length > 200 ? reqBody.substring(0, 200) + "..." : reqBody}");
     
     final res = await client.post(
       Uri.parse("$androidProxyServer/dalvik"),
@@ -380,7 +380,7 @@ class MihonExtensionService implements ExtensionService {
     final userAgent = settingsRepository.current.userAgent;
     return {
       ...MClient.getCookiesPref(source.baseUrl!),
-      'user-agent': ?userAgent,
+      if (userAgent != null) 'user-agent': userAgent,
     };
   }
 }

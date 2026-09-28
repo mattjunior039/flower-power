@@ -104,9 +104,6 @@ class _MangaWebViewState extends ConsumerState<MangaWebView> {
 
   Future<void> _runWebViewDesktop() async {
     String? ua = ref.watch(userAgentStateProvider);
-    if (ua == defaultUserAgent) {
-      ua = null;
-    }
     if (Platform.isLinux) {
       _desktopWebview = await WebviewWindow.create();
 
@@ -338,6 +335,10 @@ class _MangaWebViewState extends ConsumerState<MangaWebView> {
                         child: Focus(
                           autofocus: isTv,
                           child: InAppWebView(
+                            initialSettings: InAppWebViewSettings(
+                              userAgent: ref.watch(userAgentStateProvider),
+                              useShouldOverrideUrlLoading: true,
+                            ),
                             webViewEnvironment: webViewEnvironment,
                             onWebViewCreated: (controller) async {
                               _webViewController = controller;
